@@ -19,6 +19,7 @@ const initialState: GameState = {
   voiceEnabled: true,
   lastSpokenMessageId: null,
   hasSeenRewardBanner: false,
+  hasCompletedOnboarding: false,
 };
 
 function gameReducer(state: GameState, action: GameAction): GameState {
@@ -43,6 +44,8 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, lastSpokenMessageId: action.payload };
     case "MARK_REWARD_SEEN":
       return { ...state, hasSeenRewardBanner: true };
+    case "COMPLETE_ONBOARDING":
+      return { ...state, hasCompletedOnboarding: true };
     case "RESET_GAME":
       return { ...initialState };
     default:

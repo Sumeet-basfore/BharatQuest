@@ -5,6 +5,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ScreenShell } from "../components/common/ScreenShell";
 import { HUDStat } from "../components/common/HUDStat";
 import { FarmBackdrop } from "../components/game/FarmBackdrop";
+import { OnboardingModal } from "../components/game/OnboardingModal";
 import { VoiceFab } from "../components/common/VoiceFab";
 import { useGame } from "../context/GameContext";
 import { colors, spacing, timing, typography, radii } from "../config/theme";
@@ -28,18 +29,19 @@ export function DashboardScreen({ navigation }: any) {
   };
 
   useEffect(() => {
-    // Only auto-advance if we're at the very beginning of the flow and haven't seen the banner
-    if (state.flowStep === "dashboard" && !state.hasSeenRewardBanner) {
+    // Only auto-advance if we're at the very beginning of the flow, have finished onboarding, and haven't seen the banner
+    if (state.flowStep === "dashboard" && state.hasCompletedOnboarding && !state.hasSeenRewardBanner) {
       const timer = setTimeout(() => {
         dispatch({ type: "SET_FLOW_STEP", payload: "reward" });
         navigation.replace("RewardPopupScreen");
       }, timing.dashboardToReward);
       return () => clearTimeout(timer);
     }
-  }, [state.flowStep, state.hasSeenRewardBanner]);
+  }, [state.flowStep, state.hasCompletedOnboarding, state.hasSeenRewardBanner]);
 
   return (
     <ScreenShell>
+      <OnboardingModal />
       <View style={styles.header}>
         <TouchableOpacity activeOpacity={1} onPress={handleTitleTap}>
           <Text style={styles.title}>{content.dashboard.farmTitle}</Text>
@@ -74,7 +76,7 @@ export function DashboardScreen({ navigation }: any) {
           
           <View style={styles.transactionCard}>
             <View style={styles.txIconContainer}>
-              <MaterialCommunityIcons name="wheat" size={24} color={colors.textSecondary} />
+              <MaterialCommunityIcons name="barley" size={24} color={colors.textSecondary} />
             </View>
             <View style={styles.txDetails}>
               <Text style={styles.txTitle}>Sold Wheat Harvest</Text>
@@ -92,6 +94,50 @@ export function DashboardScreen({ navigation }: any) {
               <Text style={styles.txDate}>3 Days Ago</Text>
             </View>
             <Text style={styles.txAmount}>-₹300</Text>
+          </View>
+        </View>
+
+        {/* Missions list to satisfy MVP scope requirement */}
+        <View style={styles.ledgerSection}>
+          <Text style={styles.ledgerTitle}>Scam Defense Missions</Text>
+          
+          <TouchableOpacity style={[styles.transactionCard, { borderColor: colors.primary, borderWidth: 1 }]} activeOpacity={0.7} onPress={() => {
+            dispatch({ type: "SET_DECISION", payload: null });
+            dispatch({ type: "SET_CHAT_INDEX", payload: -1 });
+            dispatch({ type: "SET_SYNC_STATUS", payload: "idle" });
+            dispatch({ type: "SET_FLOW_STEP", payload: "reward" });
+            navigation.replace("RewardPopupScreen");
+          }}>
+            <View style={[styles.txIconContainer, { backgroundColor: "rgba(99, 102, 241, 0.1)" }]}>
+              <MaterialCommunityIcons name="gift" size={24} color={colors.primary} />
+            </View>
+            <View style={styles.txDetails}>
+              <Text style={styles.txTitle}>1. The Fake UPI Reward</Text>
+              <Text style={styles.txDate}>Active Threat</Text>
+            </View>
+            <MaterialCommunityIcons name="chevron-right" size={24} color={colors.textSecondary} />
+          </TouchableOpacity>
+          
+          <View style={[styles.transactionCard, { opacity: 0.6 }]}>
+            <View style={styles.txIconContainer}>
+              <MaterialCommunityIcons name="qrcode-scan" size={24} color={colors.textSecondary} />
+            </View>
+            <View style={styles.txDetails}>
+              <Text style={styles.txTitle}>2. The QR Code Fraud</Text>
+              <Text style={styles.txDate}>Locked (Complete Mission 1)</Text>
+            </View>
+            <MaterialCommunityIcons name="lock" size={20} color={colors.textSecondary} />
+          </View>
+
+          <View style={[styles.transactionCard, { opacity: 0.6 }]}>
+            <View style={styles.txIconContainer}>
+              <MaterialCommunityIcons name="phone-incoming" size={24} color={colors.textSecondary} />
+            </View>
+            <View style={styles.txDetails}>
+              <Text style={styles.txTitle}>3. The Bank Impersonator</Text>
+              <Text style={styles.txDate}>Locked (Complete Mission 2)</Text>
+            </View>
+            <MaterialCommunityIcons name="lock" size={20} color={colors.textSecondary} />
           </View>
         </View>
 

@@ -14,6 +14,7 @@ export const colors = {
   textMuted: "#6B7280",
 
   // Brand & Game
+  primary: "#6366F1",
   balanceGreen: "#105C2E",
   trustGold: "#D4AF37",
   trustGoldDim: "#8B7536",

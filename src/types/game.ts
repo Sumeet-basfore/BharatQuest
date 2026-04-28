@@ -23,6 +23,7 @@ export interface GameState {
   voiceEnabled: boolean;
   lastSpokenMessageId: string | null;
   hasSeenRewardBanner: boolean;
+  hasCompletedOnboarding: boolean;
 }
 
 export type GameAction =
@@ -36,6 +37,7 @@ export type GameAction =
   | { type: "TOGGLE_VOICE" }
   | { type: "SET_LAST_SPOKEN"; payload: string | null }
   | { type: "MARK_REWARD_SEEN" }
+  | { type: "COMPLETE_ONBOARDING" }
   | { type: "RESET_GAME" };
 
 export interface ChatMessage {
