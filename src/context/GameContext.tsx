@@ -20,6 +20,9 @@ const initialState: GameState = {
   lastSpokenMessageId: null,
   hasSeenRewardBanner: false,
   hasCompletedOnboarding: false,
+  currentLevel: 1,
+  language: "en",
+  assistedMode: false,
 };
 
 function gameReducer(state: GameState, action: GameAction): GameState {
@@ -46,6 +49,12 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, hasSeenRewardBanner: true };
     case "COMPLETE_ONBOARDING":
       return { ...state, hasCompletedOnboarding: true };
+    case "SET_LEVEL":
+      return { ...state, currentLevel: action.payload };
+    case "SET_LANGUAGE":
+      return { ...state, language: action.payload };
+    case "TOGGLE_ASSISTED_MODE":
+      return { ...state, assistedMode: !state.assistedMode };
     case "RESET_GAME":
       return { ...initialState };
     default:

@@ -13,7 +13,8 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors, typography, spacing, radii } from "../../config/theme";
-import { content } from "../../config/content";
+import { useContent } from "../../config/content";
+import { useGame } from "../../context/GameContext";
 import { ChatMessage } from "../../types/game";
 
 const scammerAvatar = require("../../assets/images/scammer_avatar.png");
@@ -29,10 +30,13 @@ export function ScamChat({
   onPhishingLinkShown,
   messageDelay = 1500,
 }: ScamChatProps) {
+  const { state } = useGame();
+  const content = useContent();
+  const levelData = content.levels[Math.min(state.currentLevel - 1, content.levels.length - 1)];
   const [visibleMessages, setVisibleMessages] = useState<ChatMessage[]>([]);
   const [isTyping, setIsTyping] = useState(true);
   const scrollRef = useRef<ScrollView>(null);
-  const messages = content.chat.messages;
+  const messages = levelData.chat.messages as unknown as ChatMessage[];
 
   useEffect(() => {
     let currentIndex = 0;
@@ -81,10 +85,10 @@ export function ScamChat({
       <View style={styles.npcHeader}>
         <Image source={scammerAvatar} style={styles.avatar} />
         <View style={styles.npcInfo}>
-          <Text style={styles.npcName}>{content.chat.npcName}</Text>
+          <Text style={styles.npcName}>{levelData.chat.npcName}</Text>
           <View style={styles.statusRow}>
             <View style={styles.onlineDot} />
-            <Text style={styles.npcRole}>{content.chat.npcRole}</Text>
+            <Text style={styles.npcRole}>{levelData.chat.npcRole}</Text>
           </View>
         </View>
         <MaterialCommunityIcons

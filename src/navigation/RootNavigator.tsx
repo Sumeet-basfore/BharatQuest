@@ -23,6 +23,7 @@ export function RootNavigator() {
       dispatch({ type: "UPDATE_TRUST", payload: snapshot.trustScore });
       dispatch({ type: "SET_FLOW_STEP", payload: snapshot.flowStep });
       dispatch({ type: "SET_DECISION", payload: snapshot.decision });
+      dispatch({ type: "SET_LEVEL", payload: snapshot.currentLevel });
       setIsReady(true);
     }
     init();

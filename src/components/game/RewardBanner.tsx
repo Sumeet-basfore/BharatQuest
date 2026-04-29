@@ -13,7 +13,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
 import { colors, typography, spacing, radii, shadows } from "../../config/theme";
-import { content } from "../../config/content";
+import { useContent } from "../../config/content";
+import { useGame } from "../../context/GameContext";
 
 const { width } = Dimensions.get("window");
 
@@ -26,6 +27,9 @@ export function RewardBanner({
   onDismiss,
   autoDismissMs = 2500,
 }: RewardBannerProps) {
+  const { state } = useGame();
+  const content = useContent();
+  const levelData = content.levels[Math.min(state.currentLevel - 1, content.levels.length - 1)];
   const [countdown, setCountdown] = useState(179); // 02:59
   const slideAnim = useRef(new Animated.Value(-300)).current;
   const opacity = useRef(new Animated.Value(0)).current;
@@ -86,9 +90,9 @@ export function RewardBanner({
               size={20}
               color={colors.scamCheckmark}
             />
-            <Text style={styles.brandName}>{content.reward.brandName}</Text>
+            <Text style={styles.brandName}>{levelData.reward.brandName}</Text>
             <View style={styles.verifiedBadge}>
-              <Text style={styles.verifiedText}>{content.reward.brandTag}</Text>
+              <Text style={styles.verifiedText}>{levelData.reward.brandTag}</Text>
             </View>
           </View>
 
@@ -99,9 +103,9 @@ export function RewardBanner({
               size={48}
               color={colors.scamGreen}
             />
-            <Text style={styles.title}>{content.reward.title}</Text>
-            <Text style={styles.subtitle}>{content.reward.subtitle}</Text>
-            <Text style={styles.cta}>{content.reward.cta}</Text>
+            <Text style={styles.title}>{levelData.reward.title}</Text>
+            <Text style={styles.subtitle}>{levelData.reward.subtitle}</Text>
+            <Text style={styles.cta}>{levelData.reward.cta}</Text>
           </View>
 
           {/* Countdown timer */}
@@ -111,7 +115,7 @@ export function RewardBanner({
               size={18}
               color={colors.urgencyRed}
             />
-            <Text style={styles.timerLabel}>{content.reward.timerLabel}</Text>
+            <Text style={styles.timerLabel}>{levelData.reward.timerLabel}</Text>
             <Text style={styles.timerValue}>{formatTime(countdown)}</Text>
           </View>
         </Animated.View>

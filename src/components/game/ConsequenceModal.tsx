@@ -1,10 +1,11 @@
 // BharatQuest – Consequence Modal (State 5)
 import React, { useRef, useEffect } from "react";
-import { View, Text, StyleSheet, Image, ScrollView, Animated } from "react-native";
+import { View, Text, StyleSheet, Image, ScrollView, Animated, Share } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { colors, typography, spacing, radii, shadows } from "../../config/theme";
-import { content } from "../../config/content";
+import { useContent } from "../../config/content";
+import { useGame } from "../../context/GameContext";
 import { PrimaryButton } from "../common/PrimaryButton";
 
 const badgeImage = require("../../assets/images/scam_defender_badge.png");
@@ -15,10 +16,13 @@ interface ConsequenceModalProps {
 }
 
 export function ConsequenceModal({ branch, onDismiss }: ConsequenceModalProps) {
+  const content = useContent();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
+  const { state } = useGame();
+  const levelData = content.levels[Math.min(state.currentLevel - 1, content.levels.length - 1)];
   const isFail = branch === "claim";
-  const data = isFail ? content.result.failure : content.result.success;
+  const data = isFail ? levelData.result.failure : levelData.result.success;
 
   useEffect(() => {
     Animated.parallel([
@@ -41,7 +45,10 @@ export function ConsequenceModal({ branch, onDismiss }: ConsequenceModalProps) {
 }
 
 function FailureContent({ onDismiss }: { onDismiss: () => void }) {
-  const f = content.result.failure;
+  const { state } = useGame();
+  const content = useContent();
+  const levelData = content.levels[Math.min(state.currentLevel - 1, content.levels.length - 1)];
+  const f = levelData.result.failure;
   return (
     <View style={styles.content}>
       <MaterialCommunityIcons name="alert-circle" size={64} color={colors.warningRed} />
@@ -63,6 +70,11 @@ function FailureContent({ onDismiss }: { onDismiss: () => void }) {
           <Text style={styles.tipText}>{tip}</Text>
         </View>
       ))}
+      {state.assistedMode && (
+        <View style={styles.assistedBox}>
+          <Text style={styles.assistedText}>👨‍👩‍👧‍👦 {f.grandchildTip}</Text>
+        </View>
+      )}
       <View style={styles.dismissBtn}>
         <PrimaryButton label={f.dismissLabel} color={colors.warningRed} onPress={onDismiss} icon="check" />
       </View>
@@ -71,7 +83,10 @@ function FailureContent({ onDismiss }: { onDismiss: () => void }) {
 }
 
 function SuccessContent({ onDismiss }: { onDismiss: () => void }) {
-  const s = content.result.success;
+  const { state } = useGame();
+  const content = useContent();
+  const levelData = content.levels[Math.min(state.currentLevel - 1, content.levels.length - 1)];
+  const s = levelData.result.success;
   return (
     <View style={styles.content}>
       <Text style={styles.title}>{s.title}</Text>
@@ -83,7 +98,26 @@ function SuccessContent({ onDismiss }: { onDismiss: () => void }) {
         <Text style={styles.statGainText}>🛡️ {s.trustGained}</Text>
       </View>
       <Text style={styles.celebration}>{s.celebration}</Text>
+      {state.assistedMode && (
+        <View style={styles.assistedBox}>
+          <Text style={styles.assistedText}>👨‍👩‍👧‍👦 {s.grandchildTip}</Text>
+        </View>
+      )}
       <View style={styles.dismissBtn}>
+        <PrimaryButton 
+          label={content.share?.button || "Share on WhatsApp"} 
+          color="#25D366" 
+          onPress={async () => {
+            try {
+              const msg = (content.share?.message || "I just proved my digital safety on BharatQuest! I am a Scam Defender with a Trust Score of {score}/100. Protect your digital wallet too! Can you beat my score?").replace("{score}", String(state.trustScore));
+              await Share.share({ message: msg });
+            } catch (e) {
+              console.error(e);
+            }
+          }} 
+          icon="whatsapp" 
+        />
+        <View style={{ height: spacing.md }} />
         <PrimaryButton label={s.dismissLabel} color={colors.successGreen} onPress={onDismiss} icon="arrow-right" />
       </View>
     </View>
@@ -116,4 +150,6 @@ const styles = StyleSheet.create({
   badgeSub: { fontSize: typography.md, color: colors.textSecondary },
   celebration: { fontSize: typography.sm, color: colors.textSecondary, fontStyle: "italic", textAlign: "center" },
   dismissBtn: { width: "100%", marginTop: spacing.lg },
+  assistedBox: { width: "100%", backgroundColor: "rgba(105, 180, 255, 0.15)", borderRadius: radii.md, padding: spacing.md, marginTop: spacing.sm, borderWidth: 1, borderColor: "rgba(105, 180, 255, 0.3)" },
+  assistedText: { color: "#69B4FF", fontSize: typography.sm, fontWeight: "600", lineHeight: 20 },
 });

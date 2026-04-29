@@ -5,9 +5,12 @@ import { ScreenShell } from "../components/common/ScreenShell";
 import { ScamChat } from "../components/game/ScamChat";
 import { DecisionSheet } from "../components/game/DecisionSheet";
 import { useGame } from "../context/GameContext";
+import { useContent } from "../config/content";
 
 export function DecisionScreen({ navigation }: any) {
-  const { dispatch } = useGame();
+  const content = useContent();
+  const { state, dispatch } = useGame();
+  const levelData = content.levels[Math.min(state.currentLevel - 1, content.levels.length - 1)];
 
   const handleClaim = () => {
     dispatch({ type: "SET_DECISION", payload: "claim" });

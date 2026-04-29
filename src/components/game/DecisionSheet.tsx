@@ -4,7 +4,8 @@ import { View, Text, StyleSheet, Animated, Dimensions } from "react-native";
 import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
 import { colors, typography, spacing, radii } from "../../config/theme";
-import { content } from "../../config/content";
+import { useContent } from "../../config/content";
+import { useGame } from "../../context/GameContext";
 import { PrimaryButton } from "../common/PrimaryButton";
 
 const { height } = Dimensions.get("window");
@@ -15,6 +16,9 @@ interface DecisionSheetProps {
 }
 
 export function DecisionSheet({ onClaim, onReport }: DecisionSheetProps) {
+  const content = useContent();
+  const { state } = useGame();
+  const levelData = content.levels[Math.min(state.currentLevel - 1, content.levels.length - 1)];
   const slideAnim = useRef(new Animated.Value(height * 0.5)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
 
@@ -47,10 +51,10 @@ export function DecisionSheet({ onClaim, onReport }: DecisionSheetProps) {
       <BlurView intensity={30} tint="dark" style={styles.backdrop}>
         <Animated.View style={[styles.sheet, { transform: [{ translateY: slideAnim }] }]}>
           <View style={styles.handleBar} />
-          <Text style={styles.title}>{content.decision.title}</Text>
+          <Text style={styles.title}>{levelData.decision.title}</Text>
           <View style={styles.buttonGroup}>
-            <PrimaryButton label={content.decision.claimButton} icon="gift" color={colors.deceptiveBlue} onPress={handleClaim} pulse={true} />
-            <PrimaryButton label={content.decision.reportButton} icon="shield-off" color={colors.warningRed} onPress={handleReport} pulse={false} />
+            <PrimaryButton label={levelData.decision.claimButton} icon={levelData.id === 2 ? "qrcode-scan" : levelData.id === 3 ? "card-account-details" : "gift"} color={colors.deceptiveBlue} onPress={handleClaim} pulse={true} />
+            <PrimaryButton label={levelData.decision.reportButton} icon="shield-off" color={colors.warningRed} onPress={handleReport} pulse={false} />
           </View>
         </Animated.View>
       </BlurView>

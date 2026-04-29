@@ -24,6 +24,9 @@ export interface GameState {
   lastSpokenMessageId: string | null;
   hasSeenRewardBanner: boolean;
   hasCompletedOnboarding: boolean;
+  currentLevel: number;
+  language: "en" | "hi" | "as";
+  assistedMode: boolean;
 }
 
 export type GameAction =
@@ -38,6 +41,9 @@ export type GameAction =
   | { type: "SET_LAST_SPOKEN"; payload: string | null }
   | { type: "MARK_REWARD_SEEN" }
   | { type: "COMPLETE_ONBOARDING" }
+  | { type: "SET_LEVEL"; payload: number }
+  | { type: "SET_LANGUAGE"; payload: "en" | "hi" | "as" }
+  | { type: "TOGGLE_ASSISTED_MODE" }
   | { type: "RESET_GAME" };
 
 export interface ChatMessage {

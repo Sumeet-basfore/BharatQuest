@@ -5,13 +5,14 @@ import { View, Text, StyleSheet, Animated, Easing } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { colors, typography, spacing, radii } from "../../config/theme";
-import { content } from "../../config/content";
+import { useContent } from "../../config/content";
 
 interface SyncOverlayProps {
   onComplete: () => void;
 }
 
 export function SyncOverlay({ onComplete }: SyncOverlayProps) {
+  const content = useContent();
   const [phase, setPhase] = useState<"syncing" | "success">("syncing");
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;

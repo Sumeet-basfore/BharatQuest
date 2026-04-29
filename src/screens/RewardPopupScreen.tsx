@@ -7,11 +7,13 @@ import { HUDStat } from "../components/common/HUDStat";
 import { FarmBackdrop } from "../components/game/FarmBackdrop";
 import { useGame } from "../context/GameContext";
 import { colors, spacing, timing } from "../config/theme";
-import { content } from "../config/content";
+import { useContent } from "../config/content";
 import { Audio } from "expo-av";
 
 export function RewardPopupScreen({ navigation }: any) {
+  const content = useContent();
   const { state, dispatch } = useGame();
+  const levelData = content.levels[Math.min(state.currentLevel - 1, content.levels.length - 1)];
 
   useEffect(() => {
     // Play cash register sound

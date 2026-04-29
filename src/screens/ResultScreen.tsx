@@ -10,14 +10,16 @@ import { FarmBackdrop } from "../components/game/FarmBackdrop";
 import { useGame } from "../context/GameContext";
 import { useVoiceNarration } from "../hooks/useVoiceNarration";
 import { colors, spacing } from "../config/theme";
-import { content } from "../config/content";
+import { useContent } from "../config/content";
 import { FAILURE_PENALTY, FAILURE_TRUST_LOSS, SUCCESS_TRUST_GAIN } from "../types/game";
 import { saveGameSnapshot } from "../services/storage";
 
 const { width, height } = Dimensions.get("window");
 
 export function ResultScreen({ navigation }: any) {
+  const content = useContent();
   const { state, dispatch } = useGame();
+  const levelData = content.levels[Math.min(state.currentLevel - 1, content.levels.length - 1)];
   const [showSync, setShowSync] = useState(false);
   const isFail = state.decision === "claim";
   const [showConfetti, setShowConfetti] = useState(!isFail);
@@ -25,17 +27,23 @@ export function ResultScreen({ navigation }: any) {
   // Narration
   useVoiceNarration({
     messageId: isFail ? "result_fail" : "result_success",
-    text: isFail ? content.result.failure.voiceNarration : content.result.success.voiceNarration,
+    text: isFail ? levelData.result.failure.voiceNarration : levelData.result.success.voiceNarration,
     enabled: state.voiceEnabled,
+    language: state.language === "en" ? "en-IN" : state.language === "hi" ? "hi-IN" : "as-IN",
   });
 
   useEffect(() => {
     // Apply consequence
+    let newLevel = state.currentLevel;
     if (isFail) {
       dispatch({ type: "UPDATE_BALANCE", payload: state.balance - FAILURE_PENALTY });
       dispatch({ type: "UPDATE_TRUST", payload: state.trustScore - FAILURE_TRUST_LOSS });
     } else {
       dispatch({ type: "UPDATE_TRUST", payload: state.trustScore + SUCCESS_TRUST_GAIN });
+      if (state.currentLevel < content.levels.length) {
+         newLevel = state.currentLevel + 1;
+         dispatch({ type: "SET_LEVEL", payload: newLevel });
+      }
     }
     
     // Save to async storage
@@ -45,6 +53,9 @@ export function ResultScreen({ navigation }: any) {
       flowStep: "dashboard", // Demo is effectively done, return to dashboard
       decision: state.decision,
       syncComplete: false,
+      currentLevel: newLevel,
+      language: state.language,
+      assistedMode: state.assistedMode,
     });
   }, []);
 

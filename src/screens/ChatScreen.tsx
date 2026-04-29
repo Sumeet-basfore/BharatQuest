@@ -5,17 +5,20 @@ import { ScamChat } from "../components/game/ScamChat";
 import { VoiceFab } from "../components/common/VoiceFab";
 import { useGame } from "../context/GameContext";
 import { useVoiceNarration } from "../hooks/useVoiceNarration";
-import { content } from "../config/content";
+import { useContent } from "../config/content";
 
 export function ChatScreen({ navigation }: any) {
+  const content = useContent();
   const { state, dispatch } = useGame();
+  const levelData = content.levels[Math.min(state.currentLevel - 1, content.levels.length - 1)];
   const [isSpeakingWarning, setIsSpeakingWarning] = useState(false);
 
   // Play warning when phishing link appears
   useVoiceNarration({
     messageId: isSpeakingWarning ? "warning" : null,
-    text: content.chat.voiceWarning,
+    text: levelData.chat.voiceWarning,
     enabled: state.voiceEnabled,
+    language: state.language === "en" ? "en-IN" : state.language === "hi" ? "hi-IN" : "as-IN",
   });
 
   const handlePhishingLinkShown = () => {
