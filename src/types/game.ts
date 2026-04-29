@@ -34,6 +34,7 @@ export interface GameState {
   assistedMode: boolean;
   activeSmsAlert: SmsAlert | null;
   badges: string[];
+  trustedContact: string | null;
 }
 
 export type GameAction =
@@ -53,7 +54,8 @@ export type GameAction =
   | { type: "TOGGLE_ASSISTED_MODE" }
   | { type: "SET_SMS_ALERT"; payload: SmsAlert | null }
   | { type: "SHOW_BADGE"; payload: string }
-  | { type: "RESET_GAME" };
+  | { type: "RESET_GAME" }
+  | { type: 'SET_TRUSTED_CONTACT'; payload: string | null };
 
 export interface ChatMessage {
   id: string;
