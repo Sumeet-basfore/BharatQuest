@@ -21,7 +21,14 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "READ_SMS",
+        "RECEIVE_SMS",
+        "READ_SMS",
+        "RECEIVE_SMS"
+      ],
+      "package": "com.anonymous.bharatquest_init"
     },
     "web": {
       "favicon": "./assets/favicon.png"
