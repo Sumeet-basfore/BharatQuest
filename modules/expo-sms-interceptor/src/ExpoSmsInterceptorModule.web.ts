@@ -1,19 +1,11 @@
+// Web fallback — SMS interception is Android-only.
+// This module is a no-op safe stub to prevent crashes on web.
 import { registerWebModule, NativeModule } from 'expo';
 
-import { ChangeEventPayload } from './ExpoSmsInterceptor.types';
-
-type ExpoSmsInterceptorModuleEvents = {
-  onChange: (params: ChangeEventPayload) => void;
-}
+import { ExpoSmsInterceptorModuleEvents } from './ExpoSmsInterceptor.types';
 
 class ExpoSmsInterceptorModule extends NativeModule<ExpoSmsInterceptorModuleEvents> {
-  PI = Math.PI;
-  async setValueAsync(value: string): Promise<void> {
-    this.emit('onChange', { value });
-  }
-  hello() {
-    return 'Hello world! 👋';
-  }
-};
+  // No-op stubs for web compatibility
+}
 
 export default registerWebModule(ExpoSmsInterceptorModule, 'ExpoSmsInterceptorModule');

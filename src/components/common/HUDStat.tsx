@@ -33,35 +33,44 @@ export function HUDStat({
   animationDuration = 1500,
   showProgressBar = false,
 }: HUDStatProps) {
-  const [displayValue, setDisplayValue] = useState(0);
-  const animRef = useRef(new Animated.Value(0)).current;
+  const [displayValue, setDisplayValue] = useState(value);
+  const animRef = useRef(new Animated.Value(value)).current;
   const scaleRef = useRef(new Animated.Value(1)).current;
-  const progressWidth = useRef(new Animated.Value(0)).current;
+  const progressWidth = useRef(new Animated.Value(value)).current;
+  const isFirstRender = useRef(true);
 
   const target = animateTo !== undefined ? animateTo : value;
 
   useEffect(() => {
-    animRef.setValue(0);
-    setDisplayValue(0);
-
     const listener = animRef.addListener(({ value: v }) => {
       setDisplayValue(Math.round(v));
     });
 
-    Animated.timing(animRef, {
-      toValue: target,
-      duration: animationDuration,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: false,
-    }).start();
-    
-    if (showProgressBar) {
-      Animated.timing(progressWidth, {
+    // On first render, snap immediately to value (no animation from 0)
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      animRef.setValue(target);
+      setDisplayValue(target);
+      if (showProgressBar) {
+        progressWidth.setValue(target);
+      }
+    } else {
+      // Animate from current value to new target (not from 0)
+      Animated.timing(animRef, {
         toValue: target,
         duration: animationDuration,
         easing: Easing.out(Easing.cubic),
         useNativeDriver: false,
       }).start();
+      
+      if (showProgressBar) {
+        Animated.timing(progressWidth, {
+          toValue: target,
+          duration: animationDuration,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: false,
+        }).start();
+      }
     }
 
     return () => {

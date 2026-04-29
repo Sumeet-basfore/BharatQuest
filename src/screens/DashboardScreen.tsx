@@ -1,5 +1,5 @@
 // BharatQuest – Dashboard Screen (State 1)
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, ScrollView } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ScreenShell } from "../components/common/ScreenShell";
@@ -11,21 +11,24 @@ import { useGame } from "../context/GameContext";
 import { colors, spacing, timing, typography, radii, shadows } from "../config/theme";
 import { useContent } from "../config/content";
 import { PrimaryButton } from "../components/common/PrimaryButton";
+import { resetGameSnapshot } from "../services/storage";
 
 export function DashboardScreen({ navigation }: any) {
   const content = useContent();
   const { state, dispatch } = useGame();
 
-  // Hidden triple-tap to reset demo
-  let tapCount = 0;
-  let tapTimer: NodeJS.Timeout;
+  // Hidden triple-tap to reset demo — uses useRef to persist across re-renders
+  const tapCountRef = useRef(0);
+  const tapTimerRef = useRef<NodeJS.Timeout | undefined>(undefined);
+
   const handleTitleTap = () => {
-    tapCount++;
-    clearTimeout(tapTimer);
-    tapTimer = setTimeout(() => { tapCount = 0; }, 500);
-    if (tapCount >= 3) {
+    tapCountRef.current++;
+    clearTimeout(tapTimerRef.current);
+    tapTimerRef.current = setTimeout(() => { tapCountRef.current = 0; }, 500);
+    if (tapCountRef.current >= 3) {
       dispatch({ type: "RESET_GAME" });
-      tapCount = 0;
+      resetGameSnapshot(); // Also clear persisted state
+      tapCountRef.current = 0;
     }
   };
 
@@ -166,6 +169,25 @@ export function DashboardScreen({ navigation }: any) {
             />
           </View>
         )}
+
+        {/* 🔴 Demo Tool: Simulate Scam SMS — triggers full interception flow */}
+        <View style={styles.ledgerSection}>
+          <Text style={styles.ledgerTitle}>Demo Tools</Text>
+          <PrimaryButton
+            label="Simulate Scam SMS"
+            color={colors.warningRed}
+            icon="message-alert"
+            onPress={() => {
+              dispatch({
+                type: "SET_SMS_ALERT",
+                payload: {
+                  messageBody: "आपने ₹50,000 की लॉटरी जीती है! अभी क्लिक करें और अपना इनाम पाएं: http://bit.ly/fake-lottery-claim",
+                  sender: "+91-9876543210",
+                },
+              });
+            }}
+          />
+        </View>
         
         {/* Settings Section */}
         <View style={styles.ledgerSection}>

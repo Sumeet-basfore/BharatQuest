@@ -254,31 +254,53 @@ const translateToEnglish = async (text: string): Promise<string> => {
 /**
  * Heuristic "AI" Detection Model for SMS Scams.
  * Uses RegEx and keyword matching to identify high-risk message patterns.
+ * 
+ * Patterns A-D require a link. Patterns E-F catch link-less scams.
+ * This ensures common Hindi/regional scam messages are still detected.
  */
 export const analyzeScamText = async (messageBody: string): Promise<boolean> => {
-  // 1. Normalize text through the translation pipeline
-  const englishText = await translateToEnglish(messageBody);
-  const lowerText = englishText.toLowerCase();
+  try {
+    // 1. Normalize text through the translation pipeline (never throws)
+    const englishText = await translateToEnglish(messageBody);
+    const lowerText = englishText.toLowerCase();
 
-  // 2. High-risk pattern matching (Heuristic Approach)
-  
-  // Pattern A: Urgency + Link (e.g., "KYC Expired", "Account Blocked")
-  const hasUrgency = /(account blocked|kyc|suspended|expired|urgent|action required)/i.test(lowerText);
-  const hasLink = /(http:\/\/|https:\/\/|\.apk|\.com|\.in|bit\.ly|t\.co)/i.test(lowerText);
-  const isUrgencyLinkScam = hasUrgency && hasLink;
+    // 2. High-risk pattern matching (Heuristic Approach)
+    
+    // Pattern A: Urgency + Link (e.g., "KYC Expired", "Account Blocked")
+    const hasUrgency = /(account blocked|kyc|suspended|expired|urgent|action required|immediately|warning|blocked)/i.test(lowerText);
+    const hasLink = /(http:\/\/|https:\/\/|\.apk|\.com|\.in|bit\.ly|t\.co)/i.test(lowerText);
+    const isUrgencyLinkScam = hasUrgency && hasLink;
 
-  // Pattern B: Greed + Action (e.g., "You won lottery", "UPI Cashback")
-  const hasGreed = /(lottery|cashback|reward|prize|won|crore|lakh|gift)/i.test(lowerText);
-  const hasAction = /(click|claim|receive|tap|forward|link)/i.test(lowerText);
-  const isGreedActionScam = hasGreed && (hasAction || hasLink);
+    // Pattern B: Greed + Action (e.g., "You won lottery", "UPI Cashback")
+    const hasGreed = /(lottery|cashback|reward|prize|won|crore|lakh|gift|congratulations|free)/i.test(lowerText);
+    const hasAction = /(click|claim|receive|tap|forward|link|download|install|scan)/i.test(lowerText);
+    const isGreedActionScam = hasGreed && (hasAction || hasLink);
 
-  // Pattern C: Auth + Warning (e.g., "Don't share OTP", but followed by a fake verification request)
-  const hasAuth = /(otp|password|pin|cvv)/i.test(lowerText);
-  const hasWarning = /(don't share|never share|official|verify)/i.test(lowerText);
-  const isAuthScam = hasAuth && hasWarning && hasLink;
-  
-  // Pattern D: Generic Malicious Keywords
-  const isGenericScam = hasLink && /(free|update|secure|check)/i.test(lowerText);
+    // Pattern C: Auth + Warning (e.g., "Don't share OTP", but followed by a fake verification request)
+    const hasAuth = /(otp|password|pin|cvv|card number|aadhaar|pan)/i.test(lowerText);
+    const hasWarning = /(don't share|never share|official|verify|verification|share)/i.test(lowerText);
+    const isAuthScam = hasAuth && hasWarning && hasLink;
+    
+    // Pattern D: Generic Malicious Keywords + Link
+    const isGenericScam = hasLink && /(free|update|secure|check|offer|discount)/i.test(lowerText);
 
-  return isUrgencyLinkScam || isGreedActionScam || isAuthScam || isGenericScam;
+    // Pattern E: Multiple urgency signals without link (catches Hindi-only scams)
+    // If 2+ suspicious categories trigger, it's likely a scam even without a link
+    const suspiciousCategories = [hasUrgency, hasAuth, hasGreed].filter(Boolean).length;
+    const isHighUrgencyScam = suspiciousCategories >= 2;
+
+    // Pattern F: Auth credential harvesting (no link needed — e.g., "share your OTP/CVV/PIN")
+    const isAuthHarvestScam = hasAuth && /(share|send|enter|provide|give|tell)/i.test(lowerText);
+
+    // Pattern G: Mixed script detection — if original text has Devanagari/Bengali
+    // AND translated text contains scam keywords, boost confidence
+    const hasMixedScript = /[\u0900-\u097F\u0980-\u09FF]/.test(messageBody) && messageBody !== englishText;
+    const isMixedScriptScam = hasMixedScript && (hasGreed || hasUrgency || hasAuth);
+
+    return isUrgencyLinkScam || isGreedActionScam || isAuthScam || isGenericScam ||
+           isHighUrgencyScam || isAuthHarvestScam || isMixedScriptScam;
+  } catch (error) {
+    console.error('[analyzeScamText] Detection failed, defaulting to safe:', error);
+    return false; // Never crash — fail safe (false = not scam)
+  }
 };
