@@ -25,6 +25,7 @@ const initialState: GameState = {
   assistedMode: false,
   activeSmsAlert: null,
   badges: [],
+  trustedContact: null,
 };
 
 function gameReducer(state: GameState, action: GameAction): GameState {
@@ -59,6 +60,8 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, assistedMode: !state.assistedMode };
     case "SET_SMS_ALERT":
       return { ...state, activeSmsAlert: action.payload };
+    case "SET_TRUSTED_CONTACT":
+      return { ...state, trustedContact: action.payload };
     case "SHOW_BADGE":
       return { 
         ...state, 
@@ -95,3 +98,4 @@ export function useGame(): GameContextValue {
   }
   return context;
 }
+

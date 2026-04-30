@@ -169,7 +169,37 @@ export function DashboardScreen({ navigation }: any) {
             />
           </View>
         )}
-
+{/* 🛡️ Safety Net Section */}
+        <View style={styles.ledgerSection}>
+          <Text style={styles.ledgerTitle}>Safety Net</Text>
+          
+          <TouchableOpacity 
+            style={styles.settingsRow} 
+            activeOpacity={0.7}
+            onPress={() => {
+              // Since we're in a hackathon, we can use a basic prompt 
+              // to quickly test the 'trustedContact' state we created
+              const phoneNumber = prompt("Enter Safety Buddy Phone Number:", state.trustedContact || "");
+              if (phoneNumber !== null) {
+                dispatch({ type: "SET_TRUSTED_CONTACT", payload: phoneNumber });
+              }
+            }}
+          >
+            <View style={{ flex: 1 }}>
+              <Text style={styles.txTitle}>Safety Buddy</Text>
+              <Text style={styles.txDate}>
+                {state.trustedContact 
+                  ? `Alerts will be sent to: ${state.trustedContact}` 
+                  : "Not set. Tap to add a trusted contact."}
+              </Text>
+            </View>
+            <MaterialCommunityIcons 
+              name={state.trustedContact ? "shield-check" : "shield-alert"} 
+              size={24} 
+              color={state.trustedContact ? colors.successGreen : colors.warningRed} 
+            />
+          </TouchableOpacity>
+        </View>
         {/* 🔴 Demo Tool: Simulate Scam SMS — triggers full interception flow */}
         <View style={styles.ledgerSection}>
           <Text style={styles.ledgerTitle}>Demo Tools</Text>
