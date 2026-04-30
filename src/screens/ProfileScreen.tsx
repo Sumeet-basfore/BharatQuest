@@ -95,19 +95,19 @@ export function ProfileScreen({ onLogout }: { onLogout: () => void }) {
             <Text style={styles.avatarText}>{avatarLabel}</Text>
           </View>
           <Text style={[styles.profileName, { fontSize: 22 * fontScale }]}>{dbUser ? dbUser.username : "Nazia"}</Text>
-          <Text style={[styles.profileSub, { fontSize: 13 * fontScale }]}>Trust Score: {state.trustScore}/100 · Credit: {creditScore}</Text>
+          <Text style={[styles.profileSub, { fontSize: 13 * fontScale }]}>{content.profile.trustScoreFormat}: {state.trustScore}/100 · {content.profile.creditFormat}: {creditScore}</Text>
         </View>
 
         {/* ── Manage Account ── */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>MANAGE ACCOUNT</Text>
+          <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>{content.profile.manageAccount}</Text>
           <View style={[styles.card, { backgroundColor: cardBg, borderColor: cardBorder }]}>
             
             <TouchableOpacity style={styles.menuRow} onPress={() => setEditModalVisible(true)}>
               <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}><MaterialCommunityIcons name="account-edit-outline" size={20} color={colors.primary} /></View>
               <View style={styles.menuTextBox}>
-                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>Edit Profile</Text>
-                <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>Update your name and details</Text>
+                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>{content.profile.editProfile}</Text>
+                <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>{content.profile.editProfileSub}</Text>
               </View>
               <MaterialCommunityIcons name="chevron-right" size={20} color={textMuted} />
             </TouchableOpacity>
@@ -117,8 +117,8 @@ export function ProfileScreen({ onLogout }: { onLogout: () => void }) {
             <TouchableOpacity style={styles.menuRow}>
               <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}><MaterialCommunityIcons name="bell-outline" size={20} color={colors.primary} /></View>
               <View style={styles.menuTextBox}>
-                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>Notifications</Text>
-                <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>Manage alerts and reminders</Text>
+                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>{content.profile.notifications}</Text>
+                <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>{content.profile.notificationsSub}</Text>
               </View>
               <MaterialCommunityIcons name="chevron-right" size={20} color={textMuted} />
             </TouchableOpacity>
@@ -128,8 +128,8 @@ export function ProfileScreen({ onLogout }: { onLogout: () => void }) {
             <TouchableOpacity style={styles.menuRow} onPress={() => setPassModalVisible(true)}>
               <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}><MaterialCommunityIcons name="lock-outline" size={20} color={colors.primary} /></View>
               <View style={styles.menuTextBox}>
-                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>Change PIN / Password</Text>
-                <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>Keep your account secure</Text>
+                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>{content.profile.changePin}</Text>
+                <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>{content.profile.changePinSub}</Text>
               </View>
               <MaterialCommunityIcons name="chevron-right" size={20} color={textMuted} />
             </TouchableOpacity>
@@ -139,14 +139,14 @@ export function ProfileScreen({ onLogout }: { onLogout: () => void }) {
 
         {/* ── Settings ── */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>SETTINGS</Text>
+          <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>{content.profile.settingsSection}</Text>
           <View style={[styles.card, { backgroundColor: cardBg, borderColor: cardBorder }]}>
             
             <View style={styles.menuRow}>
               <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}><MaterialCommunityIcons name={isDark ? "weather-night" : "white-balance-sunny"} size={20} color={isDark ? "#A78BFA" : "#F59E0B"} /></View>
               <View style={styles.menuTextBox}>
-                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>{isDark ? "Dark Mode" : "Light Mode"}</Text>
-                <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>Switch to {isDark ? "light" : "dark"} theme</Text>
+                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>{isDark ? content.profile.darkMode : content.profile.lightMode}</Text>
+                <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>{isDark ? content.profile.switchLight : content.profile.switchDark}</Text>
               </View>
               <Switch value={isDark} onValueChange={() => dispatch({ type: "TOGGLE_DARK_MODE" })} trackColor={{ false: "#D1D5DB", true: "#6366F1" }} />
             </View>
@@ -156,7 +156,7 @@ export function ProfileScreen({ onLogout }: { onLogout: () => void }) {
             <View style={[styles.menuRow, { alignItems: "flex-start" }]}>
               <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}><MaterialCommunityIcons name="format-size" size={20} color={colors.primary} /></View>
               <View style={styles.menuTextBox}>
-                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>Font Size</Text>
+                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>{content.profile.fontSize}</Text>
                 <View style={styles.optionRow}>
                   {FONT_OPTIONS.map((opt) => (
                     <TouchableOpacity key={opt.value} onPress={() => dispatch({ type: "SET_FONT_SIZE", payload: opt.value })} style={[styles.optionBtn, { backgroundColor: state.fontSize === opt.value ? colors.primary : "transparent", borderColor: divider }]}>
@@ -184,7 +184,7 @@ export function ProfileScreen({ onLogout }: { onLogout: () => void }) {
             <View style={[styles.menuRow, { alignItems: "flex-start" }]}>
               <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}><MaterialCommunityIcons name="translate" size={20} color={colors.primary} /></View>
               <View style={styles.menuTextBox}>
-                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>Language</Text>
+                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>{content.settings.language}</Text>
                 <View style={styles.optionRow}>
                   {(['en', 'hi', 'as'] as const).map((l) => (
                     <TouchableOpacity 
@@ -218,9 +218,9 @@ export function ProfileScreen({ onLogout }: { onLogout: () => void }) {
             }}
           >
             <MaterialCommunityIcons name="logout" size={20} color={colors.failureRed} />
-            <Text style={styles.logoutText}>Log Out</Text>
+            <Text style={styles.logoutText}>{content.profile.logout}</Text>
           </TouchableOpacity>
-          <Text style={[styles.logoutHint, { color: textMuted }]}>Logging out will save your progress and end your session.</Text>
+          <Text style={[styles.logoutHint, { color: textMuted }]}>{content.profile.logoutHint}</Text>
         </View>
 
         {/* ── Modals ── */}
