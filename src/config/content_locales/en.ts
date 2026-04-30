@@ -247,6 +247,22 @@ export const en = {
     button: "Share on WhatsApp",
     message: "I just proved my digital safety on BharatQuest! I am a Scam Defender with a Trust Score of {score}/100. Protect your digital wallet too! Can you beat my score?",
   },
+  nav: {
+    home: "Home",
+    learn: "Learn",
+    profile: "Profile",
+  },
+  chatScreen: {
+    today: "Today",
+    whatShouldIDo: "What should I do?",
+  },
+  resultScreen: {
+    lostBalance: "LOST BALANCE",
+    trustHit: "TRUST HIT",
+    earnedBalance: "EARNED BALANCE",
+    trustGained: "TRUST GAINED",
+    villageSafetyTip: "Village Safety Tip:",
+  },
   // Home Screen
   home: {
     creditScoreTitle: "CREDIT SCORE",
@@ -300,7 +316,11 @@ export const en = {
       },
     ],
     missionProgressTitle: "Mission Progress",
-    scamsDefeated: "of {total} scams defeated",
+    scamsDefeated: "{current} of {total} scams defeated",
+    reportScamsTitle: "REPORT SCAMS & COMPLAINTS",
+    nchName: "National Consumer Helpline (NCH)",
+    tollFree: "Toll-Free",
+    smsSupport: "SMS Support",
   },
   // Profile Screen
   profile: {

@@ -9,9 +9,12 @@ import { ProfileScreen } from "../screens/ProfileScreen";
 import { useGame } from "../context/GameContext";
 import { colors, radii } from "../config/theme";
 
+import { useContent } from "../config/content";
+
 const Tab = createBottomTabNavigator();
 
 export function MainTabNavigator() {
+  const content = useContent();
   const { state } = useGame();
   const isDark = state.darkMode;
 
@@ -56,9 +59,9 @@ export function MainTabNavigator() {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Learn" component={LearnScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: content.nav.home }} />
+      <Tab.Screen name="Learn" component={LearnScreen} options={{ tabBarLabel: content.nav.learn }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: content.nav.profile }} />
     </Tab.Navigator>
   );
 }

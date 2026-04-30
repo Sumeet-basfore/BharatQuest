@@ -140,6 +140,7 @@ export function ProfileScreen() {
                   {FONT_OPTIONS.map((opt) => {
                     const isActive = state.fontSize === opt.value;
                     const scale = opt.value === "small" ? 14 : opt.value === "large" ? 20 : 17;
+                    const fontChar = state.language === 'hi' ? 'अ' : state.language === 'as' ? 'অ' : 'A';
                     return (
                       <TouchableOpacity
                         key={opt.value}
@@ -151,7 +152,7 @@ export function ProfileScreen() {
                         activeOpacity={0.7}
                       >
                         <Text style={[styles.fontBtnText, { fontSize: scale, color: isActive ? "#fff" : textSecondary }]}>
-                          {opt.label}
+                          {fontChar}
                         </Text>
                       </TouchableOpacity>
                     );

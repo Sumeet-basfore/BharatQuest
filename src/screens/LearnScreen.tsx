@@ -66,10 +66,10 @@ export function LearnScreen({ navigation }: any) {
             <MaterialCommunityIcons name="trophy-outline" size={32} color={colors.primary} />
             <View style={{ flex: 1 }}>
               <Text style={[styles.bannerTitle, { color: textPrimary, fontSize: 15 * fontScale }]}>
-                Mission Progress
+                {content.learn.missionProgressTitle}
               </Text>
               <Text style={[styles.bannerBody, { color: textSecondary, fontSize: 13 * fontScale }]}>
-                {state.highestLevel - 1} of {content.levels.length} scams defeated
+                {content.learn.scamsDefeated.replace("{current}", String(state.highestLevel - 1)).replace("{total}", String(content.levels.length))}
               </Text>
               <View style={[styles.progressTrack, { backgroundColor: isDark ? colors.surfaceLight : "#D1D5DB" }]}>
                 <View
@@ -152,7 +152,7 @@ export function LearnScreen({ navigation }: any) {
         {/* ── Official Helpline ── */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>
-            REPORT SCAMS & COMPLAINTS
+            {content.learn.reportScamsTitle}
           </Text>
           <View style={[styles.helplineCard, { backgroundColor: cardBg, borderColor: cardBorder }]}>
             <View style={[styles.helplineIconBox, { backgroundColor: "rgba(239, 68, 68, 0.15)" }]}>
@@ -160,7 +160,7 @@ export function LearnScreen({ navigation }: any) {
             </View>
             <View style={styles.helplineContent}>
               <Text style={[styles.helplineTitle, { color: textPrimary, fontSize: 15 * fontScale }]}>
-                National Consumer Helpline (NCH)
+                {content.learn.nchName}
               </Text>
               
               <View style={styles.helplineRow}>
@@ -170,12 +170,12 @@ export function LearnScreen({ navigation }: any) {
               
               <View style={styles.helplineRow}>
                 <MaterialCommunityIcons name="phone" size={16} color={textMuted} />
-                <Text style={[styles.helplineText, { color: textMuted, fontSize: 13 * fontScale }]}>Toll-Free: 1915, 1930</Text>
+                <Text style={[styles.helplineText, { color: textMuted, fontSize: 13 * fontScale }]}>{content.learn.tollFree}: 1915, 1930</Text>
               </View>
 
               <View style={styles.helplineRow}>
                 <MaterialCommunityIcons name="message-text" size={16} color={textMuted} />
-                <Text style={[styles.helplineText, { color: textMuted, fontSize: 13 * fontScale }]}>SMS Support: 8800001915</Text>
+                <Text style={[styles.helplineText, { color: textMuted, fontSize: 13 * fontScale }]}>{content.learn.smsSupport}: 8800001915</Text>
               </View>
 
               <View style={styles.helplineRow}>
@@ -219,7 +219,7 @@ export function LearnScreen({ navigation }: any) {
               {content.learn.missionProgressTitle}
             </Text>
             <Text style={[styles.bannerBody, { color: textSecondary, fontSize: 13 * fontScale }]}>
-              {state.currentLevel - 1} {content.learn.scamsDefeated.replace("{total}", content.levels.length.toString())}
+              {content.learn.scamsDefeated.replace("{current}", String(state.highestLevel - 1)).replace("{total}", String(content.levels.length))}
             </Text>
             <View style={[styles.progressTrack, { backgroundColor: isDark ? colors.surfaceLight : "#D1D5DB" }]}>
               <View
