@@ -1,6 +1,5 @@
 // BharatQuest – Profile Tab Screen
-// Manage Account, Settings (dark mode, font size), Logout
-import React from "react";
+import React, { useState, useEffect } from "react"; 
 import {
   View,
   Text,
@@ -8,11 +7,17 @@ import {
   StyleSheet,
   TouchableOpacity,
   Switch,
+  Modal,
+  TextInput,
+  Alert,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ScreenShell } from "../components/common/ScreenShell";
 import { useGame } from "../context/GameContext";
 import { colors, spacing, radii, shadows } from "../config/theme";
+
+// 1. IMPORT syncProgressToDB here!
+import { getUser, saveUser, syncProgressToDB } from "../database"; 
 
 type FontSize = "small" | "medium" | "large";
 
@@ -22,8 +27,46 @@ const FONT_OPTIONS: { label: string; value: FontSize }[] = [
   { label: "A", value: "large" },
 ];
 
-export function ProfileScreen() {
+export function ProfileScreen({ onLogout }: { onLogout: () => void }) {
   const { state, dispatch } = useGame();
+  
+  const [dbUser, setDbUser] = useState<{username: string, password?: string} | null>(null);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [passModalVisible, setPassModalVisible] = useState(false);
+
+  const [editName, setEditName] = useState("");
+  const [newPass, setNewPass] = useState("");
+  const [confirmPass, setConfirmPass] = useState("");
+
+  const loadUserData = () => {
+    const data = getUser();
+    if (data) {
+      setDbUser(data);
+      setEditName(data.username);
+    }
+  };
+
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
+  const handleUpdateProfile = () => {
+    if (editName.trim().length < 2) return Alert.alert("Error", "Name too short");
+    saveUser(editName, dbUser?.password || "");
+    setEditModalVisible(false);
+    loadUserData();
+    Alert.alert("Success", "Profile updated!");
+  };
+
+  const handleUpdatePassword = () => {
+    if (newPass.length < 4) return Alert.alert("Error", "PIN must be at least 4 digits");
+    if (newPass !== confirmPass) return Alert.alert("Error", "PINs don't match");
+    saveUser(dbUser?.username || "Nazia", newPass);
+    setPassModalVisible(false);
+    setNewPass("");
+    setConfirmPass("");
+    Alert.alert("Success", "Security PIN updated!");
+  };
 
   const isDark = state.darkMode;
   const bg = isDark ? colors.background : "#F0F4FF";
@@ -34,181 +77,121 @@ export function ProfileScreen() {
   const textMuted = isDark ? colors.textMuted : "#718096";
   const divider = isDark ? colors.surfaceLight : "#E2E8F0";
 
-  const fontScale =
-    state.fontSize === "small" ? 0.88 :
-    state.fontSize === "large" ? 1.14 : 1;
-
-  // Derived initials for avatar
-  const avatarLabel = "BQ";
+  const fontScale = state.fontSize === "small" ? 0.88 : state.fontSize === "large" ? 1.14 : 1;
+  const avatarLabel = dbUser ? dbUser.username.substring(0, 2).toUpperCase() : "BQ";
   const creditScore = 300 + Math.round(state.trustScore * 6.5);
 
   return (
     <ScreenShell>
-      <ScrollView
-        style={[styles.scroll, { backgroundColor: bg }]}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 40 }}
-      >
-        {/* ── Avatar & Name ── */}
+      <ScrollView style={[styles.scroll, { backgroundColor: bg }]} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+        
+        {/* ── Header ── */}
         <View style={[styles.profileHeader, { backgroundColor: isDark ? colors.surface : "#6366F1" }]}>
           <View style={styles.avatarCircle}>
             <Text style={styles.avatarText}>{avatarLabel}</Text>
           </View>
-          <Text style={[styles.profileName, { fontSize: 20 * fontScale }]}>BharatQuest User</Text>
-          <Text style={[styles.profileSub, { fontSize: 13 * fontScale }]}>
-            Trust Score: {state.trustScore}/100 · Credit: {creditScore}
-          </Text>
-
-
+          <Text style={[styles.profileName, { fontSize: 22 * fontScale }]}>{dbUser ? dbUser.username : "Nazia"}</Text>
+          <Text style={[styles.profileSub, { fontSize: 13 * fontScale }]}>Trust Score: {state.trustScore}/100 · Credit: {creditScore}</Text>
         </View>
 
         {/* ── Manage Account ── */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>
-            MANAGE ACCOUNT
-          </Text>
+          <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>MANAGE ACCOUNT</Text>
           <View style={[styles.card, { backgroundColor: cardBg, borderColor: cardBorder }]}>
-            {[
-              { icon: "account-edit-outline", label: "Edit Profile", sub: "Update your name and details" },
-              { icon: "bell-outline", label: "Notifications", sub: "Manage alerts and reminders" },
-              { icon: "lock-outline", label: "Change PIN / Password", sub: "Keep your account secure" },
-            ].map((item, idx, arr) => (
-              <React.Fragment key={item.label}>
-                <TouchableOpacity style={styles.menuRow} activeOpacity={0.7}>
-                  <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}>
-                    <MaterialCommunityIcons name={item.icon as any} size={20} color={colors.primary} />
-                  </View>
-                  <View style={styles.menuTextBox}>
-                    <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>{item.label}</Text>
-                    <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>{item.sub}</Text>
-                  </View>
-                  <MaterialCommunityIcons name="chevron-right" size={20} color={textMuted} />
-                </TouchableOpacity>
-                {idx < arr.length - 1 && <View style={[styles.divider, { backgroundColor: divider }]} />}
-              </React.Fragment>
-            ))}
+            
+            <TouchableOpacity style={styles.menuRow} onPress={() => setEditModalVisible(true)}>
+              <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}><MaterialCommunityIcons name="account-edit-outline" size={20} color={colors.primary} /></View>
+              <View style={styles.menuTextBox}>
+                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>Edit Profile</Text>
+                <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>Update your name and details</Text>
+              </View>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={textMuted} />
+            </TouchableOpacity>
+
+            <View style={[styles.divider, { backgroundColor: divider }]} />
+
+            <TouchableOpacity style={styles.menuRow}>
+              <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}><MaterialCommunityIcons name="bell-outline" size={20} color={colors.primary} /></View>
+              <View style={styles.menuTextBox}>
+                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>Notifications</Text>
+                <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>Manage alerts and reminders</Text>
+              </View>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={textMuted} />
+            </TouchableOpacity>
+
+            <View style={[styles.divider, { backgroundColor: divider }]} />
+
+            <TouchableOpacity style={styles.menuRow} onPress={() => setPassModalVisible(true)}>
+              <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}><MaterialCommunityIcons name="lock-outline" size={20} color={colors.primary} /></View>
+              <View style={styles.menuTextBox}>
+                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>Change PIN / Password</Text>
+                <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>Keep your account secure</Text>
+              </View>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={textMuted} />
+            </TouchableOpacity>
+
           </View>
         </View>
 
         {/* ── Settings ── */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>
-            SETTINGS
-          </Text>
+          <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>SETTINGS</Text>
           <View style={[styles.card, { backgroundColor: cardBg, borderColor: cardBorder }]}>
-
-            {/* Dark Mode Toggle */}
+            
             <View style={styles.menuRow}>
-              <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}>
-                <MaterialCommunityIcons
-                  name={isDark ? "weather-night" : "white-balance-sunny"}
-                  size={20}
-                  color={isDark ? "#A78BFA" : "#F59E0B"}
-                />
-              </View>
+              <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}><MaterialCommunityIcons name={isDark ? "weather-night" : "white-balance-sunny"} size={20} color={isDark ? "#A78BFA" : "#F59E0B"} /></View>
               <View style={styles.menuTextBox}>
-                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>
-                  {isDark ? "Dark Mode" : "Light Mode"}
-                </Text>
-                <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>
-                  {isDark ? "Switch to light theme" : "Switch to dark theme"}
-                </Text>
+                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>{isDark ? "Dark Mode" : "Light Mode"}</Text>
+                <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>Switch to {isDark ? "light" : "dark"} theme</Text>
               </View>
-              <Switch
-                value={isDark}
-                onValueChange={() => dispatch({ type: "TOGGLE_DARK_MODE" })}
-                trackColor={{ false: "#D1D5DB", true: "#6366F1" }}
-                thumbColor={isDark ? "#fff" : "#6366F1"}
-              />
+              <Switch value={isDark} onValueChange={() => dispatch({ type: "TOGGLE_DARK_MODE" })} trackColor={{ false: "#D1D5DB", true: "#6366F1" }} />
             </View>
 
             <View style={[styles.divider, { backgroundColor: divider }]} />
 
-            {/* Font Size */}
-            <View style={[styles.menuRow, { alignItems: "flex-start", paddingVertical: spacing.md }]}>
-              <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}>
-                <MaterialCommunityIcons name="format-size" size={20} color={colors.primary} />
-              </View>
-              <View style={[styles.menuTextBox, { gap: spacing.sm }]}>
-                <View>
-                  <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>Font Size</Text>
-                  <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>Adjust text size across the app</Text>
-                </View>
-                <View style={styles.fontRow}>
-                  {FONT_OPTIONS.map((opt) => {
-                    const isActive = state.fontSize === opt.value;
-                    const scale = opt.value === "small" ? 14 : opt.value === "large" ? 20 : 17;
-                    return (
-                      <TouchableOpacity
-                        key={opt.value}
-                        style={[
-                          styles.fontBtn,
-                          { borderColor: isActive ? colors.primary : divider, backgroundColor: isActive ? colors.primary : "transparent" },
-                        ]}
-                        onPress={() => dispatch({ type: "SET_FONT_SIZE", payload: opt.value })}
-                        activeOpacity={0.7}
-                      >
-                        <Text style={[styles.fontBtnText, { fontSize: scale, color: isActive ? "#fff" : textSecondary }]}>
-                          {opt.label}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
+            <View style={[styles.menuRow, { alignItems: "flex-start" }]}>
+              <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}><MaterialCommunityIcons name="format-size" size={20} color={colors.primary} /></View>
+              <View style={styles.menuTextBox}>
+                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>Font Size</Text>
+                <View style={styles.optionRow}>
+                  {FONT_OPTIONS.map((opt) => (
+                    <TouchableOpacity key={opt.value} onPress={() => dispatch({ type: "SET_FONT_SIZE", payload: opt.value })} style={[styles.optionBtn, { backgroundColor: state.fontSize === opt.value ? colors.primary : "transparent", borderColor: divider }]}>
+                      <Text style={{ color: state.fontSize === opt.value ? "#fff" : textSecondary, fontWeight: 'bold' }}>{opt.label}</Text>
+                    </TouchableOpacity>
+                  ))}
                 </View>
               </View>
             </View>
 
             <View style={[styles.divider, { backgroundColor: divider }]} />
 
-            {/* Assisted Mode */}
             <View style={styles.menuRow}>
-              <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}>
-                <MaterialCommunityIcons name="hand-heart-outline" size={20} color={colors.scamGreen} />
-              </View>
+              <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}><MaterialCommunityIcons name="hand-heart-outline" size={20} color={colors.scamGreen} /></View>
               <View style={styles.menuTextBox}>
                 <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>Assisted Mode</Text>
                 <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>Slower pace with extra guidance</Text>
               </View>
-              <Switch
-                value={state.assistedMode}
-                onValueChange={() => dispatch({ type: "TOGGLE_ASSISTED_MODE" })}
-                trackColor={{ false: "#D1D5DB", true: colors.scamGreen }}
-                thumbColor="#fff"
-              />
+              <Switch value={state.assistedMode} onValueChange={() => dispatch({ type: "TOGGLE_ASSISTED_MODE" })} trackColor={{ false: "#D1D5DB", true: colors.scamGreen }} />
             </View>
 
             <View style={[styles.divider, { backgroundColor: divider }]} />
 
-            {/* Language */}
-            <View style={[styles.menuRow, { alignItems: "flex-start", paddingVertical: spacing.md }]}>
-              <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}>
-                <MaterialCommunityIcons name="translate" size={20} color={colors.primary} />
-              </View>
-              <View style={[styles.menuTextBox, { gap: spacing.sm }]}>
-                <View>
-                  <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>Language</Text>
-                  <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>Choose your preferred language</Text>
-                </View>
-                <View style={styles.fontRow}>
-                  {(["en", "hi", "as"] as const).map((lang) => {
-                    const isActive = state.language === lang;
-                    const labelMap = { en: "English", hi: "हिन्दी", as: "অসমীয়া" };
-                    return (
-                      <TouchableOpacity
-                        key={lang}
-                        style={[
-                          styles.langFullBtn,
-                          { borderColor: isActive ? colors.primary : divider, backgroundColor: isActive ? colors.primary : "transparent" },
-                        ]}
-                        onPress={() => dispatch({ type: "SET_LANGUAGE", payload: lang })}
-                        activeOpacity={0.7}
-                      >
-                        <Text style={[styles.langFullText, { color: isActive ? "#fff" : textSecondary, fontSize: 12 * fontScale }]}>
-                          {labelMap[lang]}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
+            <View style={[styles.menuRow, { alignItems: "flex-start" }]}>
+              <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}><MaterialCommunityIcons name="translate" size={20} color={colors.primary} /></View>
+              <View style={styles.menuTextBox}>
+                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>Language</Text>
+                <View style={styles.optionRow}>
+                  {(['en', 'hi', 'as'] as const).map((l) => (
+                    <TouchableOpacity 
+                      key={l} 
+                      onPress={() => dispatch({ type: "SET_LANGUAGE", payload: l })} 
+                      style={[styles.langBtn, { backgroundColor: state.language === l ? colors.primary : "transparent", borderColor: divider }]}
+                    >
+                      <Text style={{ color: state.language === l ? "#fff" : textSecondary, fontSize: 11 }}>
+                        {l === 'en' ? 'English' : l === 'hi' ? 'हिन्दी' : 'অসমীয়া'}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
                 </View>
               </View>
             </View>
@@ -217,18 +200,66 @@ export function ProfileScreen() {
 
         {/* ── Logout ── */}
         <View style={styles.section}>
-          <TouchableOpacity
-            style={[styles.logoutBtn, { borderColor: colors.failureRed }]}
-            activeOpacity={0.75}
-            onPress={() => dispatch({ type: "RESET_GAME" })}
+          <TouchableOpacity 
+            style={[styles.logoutBtn, { borderColor: colors.failureRed }]} 
+            onPress={() => {
+              // 2. SAVING PROGRESS BEFORE LOGOUT
+              if (dbUser) {
+                syncProgressToDB(dbUser.username, state);
+              }
+              
+              dispatch({ type: "RESET_GAME" });
+              onLogout(); 
+            }}
           >
             <MaterialCommunityIcons name="logout" size={20} color={colors.failureRed} />
-            <Text style={[styles.logoutText, { fontSize: 15 * fontScale }]}>Log Out</Text>
+            <Text style={styles.logoutText}>Log Out</Text>
           </TouchableOpacity>
-          <Text style={[styles.logoutHint, { color: textMuted, fontSize: 11 * fontScale }]}>
-            Logging out will reset your game progress for this demo session.
-          </Text>
+          <Text style={[styles.logoutHint, { color: textMuted }]}>Logging out will save your progress and end your session.</Text>
         </View>
+
+        {/* ── Modals ── */}
+        <Modal visible={editModalVisible} transparent animationType="slide">
+          <View style={styles.modalOverlay}><View style={[styles.modalCard, { backgroundColor: cardBg }]}>
+            <Text style={[styles.modalTitle, { color: textPrimary }]}>Edit Profile Name</Text>
+            <TextInput style={[styles.input, { backgroundColor: isDark ? "#333" : "#F3F4F6", color: textPrimary }]} value={editName} onChangeText={setEditName} placeholder="New Username" placeholderTextColor="#999" />
+            <View style={styles.modalActions}>
+              <TouchableOpacity onPress={() => setEditModalVisible(false)}><Text style={{ color: textMuted }}>Cancel</Text></TouchableOpacity>
+              <TouchableOpacity onPress={handleUpdateProfile}><Text style={{ color: colors.primary, fontWeight: 'bold' }}>Update</Text></TouchableOpacity>
+            </View>
+          </View></View>
+        </Modal>
+
+        <Modal visible={passModalVisible} transparent animationType="fade">
+          <View style={styles.modalOverlay}><View style={[styles.modalCard, { backgroundColor: cardBg }]}>
+            <Text style={[styles.modalTitle, { color: textPrimary }]}>Update Security PIN</Text>
+            <TextInput 
+              style={[styles.input, { backgroundColor: isDark ? "#333" : "#F3F4F6", color: textPrimary }]} 
+              value={newPass} 
+              onChangeText={(val) => setNewPass(val.replace(/[^0-9]/g, ''))} 
+              placeholder="New 4-digit PIN" 
+              secureTextEntry 
+              keyboardType="number-pad" 
+              placeholderTextColor="#999" 
+            />
+            <TextInput 
+              style={[styles.input, { backgroundColor: isDark ? "#333" : "#F3F4F6", color: textPrimary }]} 
+              value={confirmPass} 
+              onChangeText={(val) => setConfirmPass(val.replace(/[^0-9]/g, ''))} 
+              placeholder="Confirm PIN" 
+              secureTextEntry 
+              keyboardType="number-pad" 
+              placeholderTextColor="#999" 
+            />
+            <View style={styles.modalActions}>
+              <TouchableOpacity onPress={() => setPassModalVisible(false)}><Text style={{ color: textMuted }}>Cancel</Text></TouchableOpacity>
+              <TouchableOpacity onPress={handleUpdatePassword}>
+                <Text style={{ color: colors.failureRed, fontWeight: 'bold' }}>Set PIN</Text>
+              </TouchableOpacity>
+            </View>
+          </View></View>
+        </Modal>
+
       </ScrollView>
     </ScreenShell>
   );
@@ -236,88 +267,29 @@ export function ProfileScreen() {
 
 const styles = StyleSheet.create({
   scroll: { flex: 1 },
-  profileHeader: {
-    paddingVertical: spacing.xxl,
-    paddingHorizontal: spacing.lg,
-    alignItems: "center",
-    gap: spacing.sm,
-  },
-  avatarCircle: {
-    width: 76,
-    height: 76,
-    borderRadius: 38,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "rgba(255,255,255,0.5)",
-    marginBottom: spacing.sm,
-  },
+  profileHeader: { paddingVertical: 40, alignItems: "center", gap: 5 },
+  avatarCircle: { width: 76, height: 76, borderRadius: 38, backgroundColor: "rgba(255,255,255,0.2)", alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: "rgba(255,255,255,0.5)" },
   avatarText: { fontSize: 28, fontWeight: "800", color: "#FFFFFF" },
   profileName: { fontWeight: "800", color: "#FFFFFF" },
   profileSub: { color: "rgba(255,255,255,0.75)" },
-
-  section: {
-    paddingHorizontal: spacing.lg,
-    marginTop: spacing.xl,
-  },
-  sectionTitle: {
-    fontWeight: "700",
-    letterSpacing: 0.8,
-    textTransform: "uppercase",
-    marginBottom: spacing.sm,
-  },
-  card: {
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    overflow: "hidden",
-    ...shadows.card,
-  },
-  menuRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    gap: spacing.md,
-  },
-  menuIconBox: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
-  },
+  section: { paddingHorizontal: 20, marginTop: 25 },
+  sectionTitle: { fontWeight: "700", letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 10 },
+  card: { borderRadius: 15, borderWidth: 1, overflow: "hidden", ...shadows.card },
+  menuRow: { flexDirection: "row", alignItems: "center", padding: 15, gap: 15 },
+  menuIconBox: { width: 38, height: 38, borderRadius: 19, alignItems: "center", justifyContent: "center" },
   menuTextBox: { flex: 1 },
   menuLabel: { fontWeight: "600" },
   menuSub: { marginTop: 2 },
-  divider: { height: 1, marginLeft: spacing.md },
-  fontRow: { flexDirection: "row", gap: spacing.sm },
-  fontBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: radii.md,
-    borderWidth: 1.5,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  fontBtnText: { fontWeight: "700" },
-  langFullBtn: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: radii.md,
-    borderWidth: 1.5,
-  },
-  langFullText: { fontWeight: "600" },
-  logoutBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: spacing.sm,
-    borderWidth: 1.5,
-    borderRadius: radii.lg,
-    paddingVertical: spacing.md,
-  },
+  divider: { height: 1, marginLeft: 65 },
+  optionRow: { flexDirection: 'row', gap: 10, marginTop: 10 },
+  optionBtn: { width: 45, height: 45, borderRadius: 10, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+  langBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1 },
+  logoutBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, borderWidth: 1.5, borderRadius: 15, paddingVertical: 15, marginTop: 10 },
   logoutText: { fontWeight: "700", color: colors.failureRed },
-  logoutHint: { textAlign: "center", marginTop: spacing.sm },
+  logoutHint: { textAlign: 'center', marginTop: 10, fontSize: 11 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 25 },
+  modalCard: { borderRadius: 20, padding: 25 },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
+  input: { padding: 12, borderRadius: 10, marginBottom: 15 },
+  modalActions: { flexDirection: 'row', justifyContent: 'space-between' }
 });

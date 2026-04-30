@@ -11,7 +11,12 @@ import { colors, radii } from "../config/theme";
 
 const Tab = createBottomTabNavigator();
 
-export function MainTabNavigator() {
+// 1. Define the props to accept onLogout from RootNavigator
+type MainTabProps = {
+  onLogout: () => void;
+};
+
+export function MainTabNavigator({ onLogout }: MainTabProps) {
   const { state } = useGame();
   const isDark = state.darkMode;
 
@@ -58,7 +63,11 @@ export function MainTabNavigator() {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Learn" component={LearnScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      
+      {/* 2. Bridge the onLogout function to the ProfileScreen component */}
+      <Tab.Screen name="Profile">
+        {(props) => <ProfileScreen {...props} onLogout={onLogout} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }

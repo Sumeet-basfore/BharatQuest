@@ -1,5 +1,7 @@
 // BharatQuest – Entry Point
-import React, { useEffect } from "react";
+import { LoginScreen } from './src/screens/LoginScreen';
+import { setupDatabase } from './src/database';
+import React, { useEffect, useState } from "react";
 import { Platform, PermissionsAndroid } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GameProvider, useGame } from "./src/context/GameContext";
@@ -8,29 +10,29 @@ import ExpoSmsInterceptor from "./modules/expo-sms-interceptor";
 import { analyzeScamText } from "./src/services/aiDetection";
 import { SmsInterceptorModal } from "./src/components/game/SmsInterceptorModal";
 
-/**
- * Global listener for incoming SMS messages.
- * Uses the native interceptor and heuristic AI to flag scams.
- * Hardened with: permission request, try/catch, null guards.
- */
 function SmsListener() {
   const { dispatch } = useGame();
 
-  // Request SMS permission at runtime (required for Android 6+)
   useEffect(() => {
+    try {
+      setupDatabase(); 
+      console.log("Database initialized successfully");
+    } catch (error) {
+      console.error("Database failed to start:", error);
+    }
+    
     async function requestSmsPermission() {
       if (Platform.OS !== "android") return;
       try {
-        const granted = await PermissionsAndroid.request(
+        await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.RECEIVE_SMS,
           {
             title: "SMS Permission",
-            message: "BharatQuest needs SMS access to detect scam messages in real-time.",
+            message: "BharatQuest needs SMS access to detect scam messages.",
             buttonPositive: "Allow",
             buttonNegative: "Deny",
           }
         );
-        console.log("[SMS] Permission result:", granted);
       } catch (err) {
         console.warn("[SMS] Permission request failed:", err);
       }
@@ -38,48 +40,53 @@ function SmsListener() {
     requestSmsPermission();
   }, []);
 
-  // Subscribe to native SMS events
   useEffect(() => {
     const subscription = ExpoSmsInterceptor.addListener("onSmsReceived", async (event) => {
       try {
         const messageBody = event?.messageBody;
         const sender = event?.sender || "Unknown";
+        if (!messageBody) return;
 
-        if (!messageBody || typeof messageBody !== "string") {
-          console.warn("[SmsListener] Received malformed SMS event, ignoring");
-          return;
-        }
-
-        // Run the heuristic AI detection
         const isScam = await analyzeScamText(messageBody);
-        
         if (isScam) {
-          // Trigger the Fortune Teller alert
-          dispatch({ 
-            type: "SET_SMS_ALERT", 
-            payload: { messageBody, sender } 
-          });
+          dispatch({ type: "SET_SMS_ALERT", payload: { messageBody, sender } });
         }
       } catch (error) {
-        console.error("[SmsListener] Error processing SMS:", error);
-        // Never crash — silently ignore malformed events
+        console.error("[SmsListener] Error:", error);
       }
     });
 
-    return () => {
-      subscription.remove();
-    };
+    return () => subscription.remove();
   }, [dispatch]);
 
   return <SmsInterceptorModal />;
 }
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Function to return user to LoginScreen
+  const handleLogout = () => {
+    console.log("Logging out user...");
+    setIsLoggedIn(false);
+  };
+
+  console.log("App Rendering. LoggedIn Status:", isLoggedIn);
+
+  if (!isLoggedIn) {
+    return (
+      <SafeAreaProvider>
+        <LoginScreen onLoginSuccess={() => setIsLoggedIn(true)} />
+      </SafeAreaProvider>
+    );
+  }
+
   return (
     <SafeAreaProvider>
       <GameProvider>
         <SmsListener />
-        <RootNavigator />
+        
+        <RootNavigator onLogout={handleLogout} />
       </GameProvider>
     </SafeAreaProvider>
   );
