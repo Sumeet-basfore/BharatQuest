@@ -123,7 +123,7 @@ export function HomeScreen({ navigation }: any) {
         {/* ── Credit Score Card ── */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>
-            CREDIT SCORE
+            {content.home.creditScoreTitle}
           </Text>
           <View style={[styles.creditCard, { backgroundColor: cardBg, borderColor: cardBorder }]}>
             <View style={styles.creditLeft}>
@@ -131,13 +131,13 @@ export function HomeScreen({ navigation }: any) {
                 {creditScore}
               </Text>
               <Text style={[styles.creditLabel, { color: textMuted, fontSize: 13 * fontScale }]}>
-                {creditScore >= 750 ? "Excellent" : creditScore >= 650 ? "Good" : "Fair"}
+                {creditScore >= 750 ? content.home.excellent : creditScore >= 650 ? content.home.good : content.home.fair}
               </Text>
             </View>
             <View style={styles.creditRight}>
               <MaterialCommunityIcons name="chart-arc" size={64} color={creditColor} />
               <Text style={[styles.creditRange, { color: textMuted, fontSize: 11 * fontScale }]}>
-                Range: 300–900
+                {content.home.range}
               </Text>
             </View>
           </View>

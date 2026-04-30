@@ -12,6 +12,7 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ScreenShell } from "../components/common/ScreenShell";
 import { useGame } from "../context/GameContext";
+import { useContent } from "../config/content";
 import { colors, spacing, radii, shadows } from "../config/theme";
 
 type FontSize = "small" | "medium" | "large";
@@ -23,6 +24,7 @@ const FONT_OPTIONS: { label: string; value: FontSize }[] = [
 ];
 
 export function ProfileScreen() {
+  const content = useContent();
   const { state, dispatch } = useGame();
 
   const isDark = state.darkMode;
@@ -54,9 +56,9 @@ export function ProfileScreen() {
           <View style={styles.avatarCircle}>
             <Text style={styles.avatarText}>{avatarLabel}</Text>
           </View>
-          <Text style={[styles.profileName, { fontSize: 20 * fontScale }]}>BharatQuest User</Text>
+          <Text style={[styles.profileName, { fontSize: 20 * fontScale }]}>{content.profile.defaultUserName}</Text>
           <Text style={[styles.profileSub, { fontSize: 13 * fontScale }]}>
-            Trust Score: {state.trustScore}/100 · Credit: {creditScore}
+            {content.profile.trustScoreFormat}: {state.trustScore}/100 · {content.profile.creditFormat}: {creditScore}
           </Text>
 
 
@@ -65,13 +67,13 @@ export function ProfileScreen() {
         {/* ── Manage Account ── */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>
-            MANAGE ACCOUNT
+            {content.profile.manageAccount}
           </Text>
           <View style={[styles.card, { backgroundColor: cardBg, borderColor: cardBorder }]}>
             {[
-              { icon: "account-edit-outline", label: "Edit Profile", sub: "Update your name and details" },
-              { icon: "bell-outline", label: "Notifications", sub: "Manage alerts and reminders" },
-              { icon: "lock-outline", label: "Change PIN / Password", sub: "Keep your account secure" },
+              { icon: "account-edit-outline", label: content.profile.editProfile, sub: content.profile.editProfileSub },
+              { icon: "bell-outline", label: content.profile.notifications, sub: content.profile.notificationsSub },
+              { icon: "lock-outline", label: content.profile.changePin, sub: content.profile.changePinSub },
             ].map((item, idx, arr) => (
               <React.Fragment key={item.label}>
                 <TouchableOpacity style={styles.menuRow} activeOpacity={0.7}>
@@ -93,7 +95,7 @@ export function ProfileScreen() {
         {/* ── Settings ── */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>
-            SETTINGS
+            {content.profile.settingsSection}
           </Text>
           <View style={[styles.card, { backgroundColor: cardBg, borderColor: cardBorder }]}>
 
@@ -108,10 +110,10 @@ export function ProfileScreen() {
               </View>
               <View style={styles.menuTextBox}>
                 <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>
-                  {isDark ? "Dark Mode" : "Light Mode"}
+                  {isDark ? content.profile.darkMode : content.profile.lightMode}
                 </Text>
                 <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>
-                  {isDark ? "Switch to light theme" : "Switch to dark theme"}
+                  {isDark ? content.profile.switchLight : content.profile.switchDark}
                 </Text>
               </View>
               <Switch
@@ -131,8 +133,8 @@ export function ProfileScreen() {
               </View>
               <View style={[styles.menuTextBox, { gap: spacing.sm }]}>
                 <View>
-                  <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>Font Size</Text>
-                  <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>Adjust text size across the app</Text>
+                  <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>{content.profile.fontSize}</Text>
+                  <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>{content.profile.fontSizeSub}</Text>
                 </View>
                 <View style={styles.fontRow}>
                   {FONT_OPTIONS.map((opt) => {
@@ -166,8 +168,8 @@ export function ProfileScreen() {
                 <MaterialCommunityIcons name="hand-heart-outline" size={20} color={colors.scamGreen} />
               </View>
               <View style={styles.menuTextBox}>
-                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>Assisted Mode</Text>
-                <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>Slower pace with extra guidance</Text>
+                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>{content.settings?.assistedMode || "Assisted Mode"}</Text>
+                <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>{content.profile.assistedModeSub}</Text>
               </View>
               <Switch
                 value={state.assistedMode}
@@ -186,8 +188,8 @@ export function ProfileScreen() {
               </View>
               <View style={[styles.menuTextBox, { gap: spacing.sm }]}>
                 <View>
-                  <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>Language</Text>
-                  <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>Choose your preferred language</Text>
+                  <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>{content.settings?.language || "Language"}</Text>
+                  <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>{content.profile.languageSub}</Text>
                 </View>
                 <View style={styles.fontRow}>
                   {(["en", "hi", "as"] as const).map((lang) => {
@@ -223,10 +225,10 @@ export function ProfileScreen() {
             onPress={() => dispatch({ type: "RESET_GAME" })}
           >
             <MaterialCommunityIcons name="logout" size={20} color={colors.failureRed} />
-            <Text style={[styles.logoutText, { fontSize: 15 * fontScale }]}>Log Out</Text>
+            <Text style={[styles.logoutText, { fontSize: 15 * fontScale }]}>{content.profile.logout}</Text>
           </TouchableOpacity>
           <Text style={[styles.logoutHint, { color: textMuted, fontSize: 11 * fontScale }]}>
-            Logging out will reset your game progress for this demo session.
+            {content.profile.logoutHint}
           </Text>
         </View>
       </ScrollView>

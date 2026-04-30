@@ -20,36 +20,7 @@ const MISSION_ICONS: Record<number, string> = {
   3: "phone-incoming",
 };
 
-const TIPS = [
-  {
-    id: "t1",
-    icon: "alert-circle-outline",
-    title: "Never share OTPs",
-    body: "No bank, UPI app, or government body will ever ask for your OTP. Sharing it gives strangers full access to your money.",
-    color: "#EF4444",
-  },
-  {
-    id: "t2",
-    icon: "qrcode-scan",
-    title: "QR codes only send money",
-    body: "Scanning a QR code to 'receive' money is always a scam. Legitimate payments only require you to enter a UPI ID or phone number.",
-    color: "#F59E0B",
-  },
-  {
-    id: "t3",
-    icon: "phone-incoming",
-    title: "Verify caller identity",
-    body: "Scammers impersonate bank officials. Always hang up and call the official bank helpline to verify any suspicious call.",
-    color: "#6366F1",
-  },
-  {
-    id: "t4",
-    icon: "shield-check",
-    title: "Too good to be true",
-    body: "Promises of instant rewards, lottery wins, or free cash transfers are bait. Legitimate schemes never require you to pay first.",
-    color: colors.successGreen,
-  },
-];
+
 
 export function LearnScreen({ navigation }: any) {
   const content = useContent();
@@ -77,17 +48,17 @@ export function LearnScreen({ navigation }: any) {
         {/* Page title */}
         <View style={[styles.pageHeader, { backgroundColor: bg }]}>
           <Text style={[styles.pageTitle, { color: textPrimary, fontSize: 26 * fontScale }]}>
-            Scam Defence Missions
+            {content.learn.pageTitle}
           </Text>
           <Text style={[styles.pageSubtitle, { color: textSecondary, fontSize: 14 * fontScale }]}>
-            Train yourself to spot & defeat financial fraud
+            {content.learn.pageSubtitle}
           </Text>
         </View>
 
         {/* ── Missions ── */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>
-            YOUR MISSIONS
+            {content.learn.yourMissions}
           </Text>
 
           {/* ── Progress Banner ── */}
@@ -162,7 +133,7 @@ export function LearnScreen({ navigation }: any) {
                     {level.title}
                   </Text>
                   <Text style={[styles.missionStatus, { color: textMuted, fontSize: 12 * fontScale }]}>
-                    {isCompleted ? "Completed" : isHighestActive ? "Active Threat" : `Locked – complete Mission ${level.id - 1}`}
+                    {isCompleted ? content.learn.statusCompleted : isHighestActive ? content.learn.statusActive : `${content.learn.statusLocked} ${level.id - 1}`}
                   </Text>
                 </View>
 
@@ -218,9 +189,9 @@ export function LearnScreen({ navigation }: any) {
         {/* ── Safety Tips ── */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>
-            FRAUD SAFETY TIPS
+            {content.learn.fraudSafetyTips}
           </Text>
-          {TIPS.map((tip) => (
+          {content.learn.tips.map((tip) => (
             <View
               key={tip.id}
               style={[styles.tipCard, { backgroundColor: cardBg, borderColor: cardBorder }]}
@@ -240,7 +211,26 @@ export function LearnScreen({ navigation }: any) {
           ))}
         </View>
 
-
+        {/* ── Progress Banner ── */}
+        <View style={[styles.progressBanner, { backgroundColor: isDark ? "rgba(99,102,241,0.12)" : "#EBF4FF", borderColor: colors.primary }]}>
+          <MaterialCommunityIcons name="trophy-outline" size={32} color={colors.primary} />
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.bannerTitle, { color: textPrimary, fontSize: 15 * fontScale }]}>
+              {content.learn.missionProgressTitle}
+            </Text>
+            <Text style={[styles.bannerBody, { color: textSecondary, fontSize: 13 * fontScale }]}>
+              {state.currentLevel - 1} {content.learn.scamsDefeated.replace("{total}", content.levels.length.toString())}
+            </Text>
+            <View style={[styles.progressTrack, { backgroundColor: isDark ? colors.surfaceLight : "#D1D5DB" }]}>
+              <View
+                style={[
+                  styles.progressFill,
+                  { width: `${Math.round(((state.currentLevel - 1) / content.levels.length) * 100)}%` as any },
+                ]}
+              />
+            </View>
+          </View>
+        </View>
       </ScrollView>
     </ScreenShell>
   );
