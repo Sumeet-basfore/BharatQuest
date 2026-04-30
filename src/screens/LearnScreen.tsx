@@ -132,8 +132,9 @@ export function LearnScreen({ navigation }: any) {
                   dispatch({ type: "SET_DECISION", payload: null });
                   dispatch({ type: "SET_CHAT_INDEX", payload: -1 });
                   dispatch({ type: "SET_SYNC_STATUS", payload: "idle" });
-                  dispatch({ type: "SET_FLOW_STEP", payload: "reward" });
-                  navigation.navigate("RewardPopupScreen");
+                  dispatch({ type: "SET_FLOW_STEP", payload: "chat" });
+                  dispatch({ type: "MARK_REWARD_SEEN" });
+                  navigation.navigate("ChatScreen");
                 }}
               >
                 {/* Left accent bar */}

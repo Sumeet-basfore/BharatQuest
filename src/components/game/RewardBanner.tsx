@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Animated,
   Dimensions,
+  Platform,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
@@ -25,40 +26,36 @@ interface RewardBannerProps {
 
 export function RewardBanner({
   onDismiss,
-  autoDismissMs = 2500,
+  autoDismissMs = 2800, // Slightly longer for readability
 }: RewardBannerProps) {
   const { state } = useGame();
   const content = useContent();
   const levelData = content.levels[Math.min(state.currentLevel - 1, content.levels.length - 1)];
-  const [countdown, setCountdown] = useState(179); // 02:59
-  const slideAnim = useRef(new Animated.Value(-300)).current;
+  const [countdown, setCountdown] = useState(179); 
+  const slideAnim = useRef(new Animated.Value(-120)).current;
   const opacity = useRef(new Animated.Value(0)).current;
 
-  // Slide in animation & Haptics
   useEffect(() => {
-    // Sharp double vibration to mimic aggressive notification
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
     Animated.parallel([
       Animated.spring(slideAnim, {
         toValue: 0,
-        damping: 15,
-        stiffness: 120,
+        friction: 8,
+        tension: 40,
         useNativeDriver: true,
       }),
       Animated.timing(opacity, {
         toValue: 1,
-        duration: 300,
+        duration: 400,
         useNativeDriver: true,
       }),
     ]).start();
 
-    // Auto-dismiss
     const timer = setTimeout(onDismiss, autoDismissMs);
     return () => clearTimeout(timer);
   }, []);
 
-  // Countdown ticker
   useEffect(() => {
     const interval = setInterval(() => {
       setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
@@ -67,139 +64,113 @@ export function RewardBanner({
   }, []);
 
   const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60)
-      .toString()
-      .padStart(2, "0");
+    const m = Math.floor(seconds / 60).toString();
     const s = (seconds % 60).toString().padStart(2, "0");
     return `${m}:${s}`;
   };
 
+  const isDark = state.darkMode;
+
   return (
-    <Animated.View style={[StyleSheet.absoluteFill, { opacity, zIndex: 50 }]}>
-      <BlurView intensity={20} tint="dark" style={styles.overlay}>
-        <Animated.View
-          style={[
-            styles.banner,
-            { transform: [{ translateY: slideAnim }] },
-          ]}
-        >
-          {/* Brand header */}
-          <View style={styles.brandRow}>
-            <MaterialCommunityIcons
-              name="check-decagram"
-              size={20}
-              color={colors.scamCheckmark}
-            />
+    <Animated.View style={[styles.container, { opacity, transform: [{ translateY: slideAnim }] }]}>
+      <BlurView intensity={Platform.OS === 'ios' ? 80 : 100} tint="dark" style={styles.pill}>
+        <View style={styles.iconBox}>
+          <MaterialCommunityIcons name="gift" size={24} color={colors.scamGreen} />
+          <View style={styles.glow} />
+        </View>
+
+        <View style={styles.content}>
+          <View style={styles.headerRow}>
             <Text style={styles.brandName}>{levelData.reward.brandName}</Text>
-            <View style={styles.verifiedBadge}>
-              <Text style={styles.verifiedText}>{levelData.reward.brandTag}</Text>
-            </View>
+            <MaterialCommunityIcons name="check-decagram" size={14} color={colors.scamCheckmark} />
           </View>
+          <Text style={styles.title} numberOfLines={1}>{levelData.reward.title}</Text>
+        </View>
 
-          {/* Main reward text */}
-          <View style={styles.rewardContent}>
-            <MaterialCommunityIcons
-              name="gift"
-              size={48}
-              color={colors.scamGreen}
-            />
-            <Text style={styles.title}>{levelData.reward.title}</Text>
-            <Text style={styles.subtitle}>{levelData.reward.subtitle}</Text>
-            <Text style={styles.cta}>{levelData.reward.cta}</Text>
-          </View>
-
-          {/* Countdown timer */}
-          <View style={styles.timerRow}>
-            <MaterialCommunityIcons
-              name="clock-alert-outline"
-              size={18}
-              color={colors.urgencyRed}
-            />
-            <Text style={styles.timerLabel}>{levelData.reward.timerLabel}</Text>
-            <Text style={styles.timerValue}>{formatTime(countdown)}</Text>
-          </View>
-        </Animated.View>
+        <View style={styles.timerBox}>
+          <Text style={styles.timerValue}>{formatTime(countdown)}</Text>
+          <Text style={styles.timerLabel}>left</Text>
+        </View>
       </BlurView>
     </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
-    paddingTop: 60,
+  container: {
+    position: "absolute",
+    top: 60,
+    left: spacing.lg,
+    right: spacing.lg,
+    zIndex: 100,
   },
-  banner: {
-    width: width - 32,
-    backgroundColor: "rgba(255, 255, 255, 0.95)", // slightly transparent for glass
-    borderRadius: radii.xl,
-    padding: spacing.xl,
+  pill: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    borderRadius: radii.full,
+    padding: spacing.sm,
+    paddingRight: spacing.lg,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.12)",
+    overflow: "hidden",
     ...shadows.card,
   },
-  brandRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: spacing.lg,
-    gap: spacing.xs,
-  },
-  brandName: {
-    fontSize: typography.sm,
-    fontWeight: "700",
-    color: "#1A1A1A",
-  },
-  verifiedBadge: {
-    backgroundColor: "#E8F5E9",
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: radii.sm,
-  },
-  verifiedText: {
-    fontSize: 10,
-    color: colors.scamCheckmark,
-    fontWeight: "600",
-  },
-  rewardContent: {
-    alignItems: "center",
-    paddingVertical: spacing.xl,
-    gap: spacing.sm,
-  },
-  title: {
-    fontSize: typography.xl,
-    fontWeight: "800",
-    color: "#1A1A1A",
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: typography.lg,
-    fontWeight: "600",
-    color: "#333333",
-    textAlign: "center",
-  },
-  cta: {
-    fontSize: typography.md,
-    fontWeight: "700",
-    color: colors.scamGreen,
-    textAlign: "center",
-  },
-  timerRow: {
-    flexDirection: "row",
+  iconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "rgba(37, 211, 102, 0.15)",
     alignItems: "center",
     justifyContent: "center",
-    gap: spacing.xs,
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: "#F0F0F0",
+    marginRight: spacing.md,
   },
-  timerLabel: {
-    fontSize: typography.sm,
-    color: "#666666",
+  glow: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 22,
+    backgroundColor: colors.scamGreen,
+    opacity: 0.1,
+  },
+  content: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginBottom: 2,
+  },
+  brandName: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: colors.textSecondary,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  title: {
+    fontSize: typography.md,
+    fontWeight: "800",
+    color: colors.textPrimary,
+  },
+  timerBox: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingLeft: spacing.md,
+    borderLeftWidth: 1,
+    borderLeftColor: "rgba(255, 255, 255, 0.1)",
   },
   timerValue: {
-    fontSize: typography.lg,
+    fontSize: 14,
     fontWeight: "800",
     color: colors.urgencyRed,
     fontVariant: ["tabular-nums"],
+  },
+  timerLabel: {
+    fontSize: 9,
+    fontWeight: "700",
+    color: colors.textMuted,
+    textTransform: "uppercase",
+    marginTop: -2,
   },
 });

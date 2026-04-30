@@ -1,6 +1,6 @@
 // BharatQuest – Home Tab Screen
 // Shows credit score, recent transactions & sync progress
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,14 +12,17 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ScreenShell } from "../components/common/ScreenShell";
 import { HUDStat } from "../components/common/HUDStat";
 import { OnboardingModal } from "../components/game/OnboardingModal";
+import { ScamNotificationCard } from "../components/game/ScamNotificationCard";
 import { PrimaryButton } from "../components/common/PrimaryButton";
 import { useGame } from "../context/GameContext";
+import { saveRewardBannerSeen } from "../services/storage";
 import { colors, spacing, typography, radii, shadows, timing } from "../config/theme";
 import { useContent } from "../config/content";
 
 export function HomeScreen({ navigation }: any) {
   const content = useContent();
   const { state, dispatch } = useGame();
+  const [showNotification, setShowNotification] = useState(false);
 
   // Hidden triple-tap to reset demo
   let tapCount = 0;
@@ -30,10 +33,27 @@ export function HomeScreen({ navigation }: any) {
     tapTimer = setTimeout(() => { tapCount = 0; }, 500);
     if (tapCount >= 3) {
       dispatch({ type: "RESET_GAME" });
+      setShowNotification(false);
       tapCount = 0;
     }
   };
 
+  // Show inline scam notification after a delay (replaces auto-navigate to RewardPopupScreen)
+  useEffect(() => {
+    if (state.flowStep === "dashboard" && state.hasCompletedOnboarding && !state.hasSeenRewardBanner) {
+      const timer = setTimeout(() => {
+        setShowNotification(true);
+      }, timing.dashboardToReward);
+      return () => clearTimeout(timer);
+    }
+  }, [state.flowStep, state.hasCompletedOnboarding, state.hasSeenRewardBanner]);
+
+  const handleNotificationTap = () => {
+    dispatch({ type: "MARK_REWARD_SEEN" });
+    saveRewardBannerSeen();
+    dispatch({ type: "SET_FLOW_STEP", payload: "chat" });
+    navigation.navigate("ChatScreen");
+  };
 
   // Dynamic theme
   const isDark = state.darkMode;
@@ -95,6 +115,11 @@ export function HomeScreen({ navigation }: any) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 24 }}
       >
+        {/* ── Incoming Scam Notification (replaces full-screen RewardPopup) ── */}
+        {showNotification && (
+          <ScamNotificationCard onPress={handleNotificationTap} />
+        )}
+
         {/* ── Credit Score Card ── */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>

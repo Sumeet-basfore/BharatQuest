@@ -10,9 +10,10 @@ import {
   ScrollView,
   Animated,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { colors, typography, spacing, radii } from "../../config/theme";
+import { colors, typography, spacing, radii, shadows } from "../../config/theme";
 import { useContent } from "../../config/content";
 import { useGame } from "../../context/GameContext";
 import { ChatMessage } from "../../types/game";
@@ -28,13 +29,14 @@ interface ScamChatProps {
 export function ScamChat({
   onAllMessagesShown,
   onPhishingLinkShown,
-  messageDelay = 1500,
+  messageDelay = 2200, // Slower default speed (was 1500)
 }: ScamChatProps) {
   const { state } = useGame();
   const content = useContent();
   const levelData = content.levels[Math.min(state.currentLevel - 1, content.levels.length - 1)];
   const [visibleMessages, setVisibleMessages] = useState<ChatMessage[]>([]);
   const [isTyping, setIsTyping] = useState(true);
+  const [isFinished, setIsFinished] = useState(false); // Track when all messages are done
   const scrollRef = useRef<ScrollView>(null);
   const messages = levelData.chat.messages as unknown as ChatMessage[];
 
@@ -47,7 +49,7 @@ export function ScamChat({
       if (unmounted || currentIndex >= messages.length) {
         if (!unmounted) {
           setIsTyping(false);
-          onAllMessagesShown();
+          setIsFinished(true); // Show the Next button
         }
         return;
       }
@@ -68,9 +70,15 @@ export function ScamChat({
         currentIndex++;
 
         if (currentIndex < messages.length) {
-          timers.push(setTimeout(showNextMessage, 600));
+          // Delay between messages (was 600, now 1000 for slower pace)
+          timers.push(setTimeout(showNextMessage, 1000));
         } else {
-          timers.push(setTimeout(() => { if (!unmounted) onAllMessagesShown(); }, 800));
+          // Final delay before showing the Next button
+          timers.push(setTimeout(() => { 
+            if (!unmounted) {
+              setIsFinished(true);
+            }
+          }, 1200));
         }
       }, messageDelay));
     };
@@ -87,7 +95,7 @@ export function ScamChat({
     setTimeout(() => {
       scrollRef.current?.scrollToEnd({ animated: true });
     }, 100);
-  }, [visibleMessages, isTyping]);
+  }, [visibleMessages, isTyping, isFinished]);
 
   return (
     <View style={styles.container}>
@@ -109,23 +117,42 @@ export function ScamChat({
       </View>
 
       {/* Chat area */}
-      <ScrollView
-        ref={scrollRef}
-        style={styles.chatArea}
-        contentContainerStyle={styles.chatContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Timestamp */}
-        <View style={styles.timestampRow}>
-          <Text style={styles.timestamp}>Today, 2:34 PM</Text>
-        </View>
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          ref={scrollRef}
+          style={styles.chatArea}
+          contentContainerStyle={styles.chatContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Timestamp */}
+          <View style={styles.timestampRow}>
+            <Text style={styles.timestamp}>Today, 2:34 PM</Text>
+          </View>
 
-        {visibleMessages.map((msg, index) => (
-          <MessageBubble key={msg.id} message={msg} index={index} />
-        ))}
+          {visibleMessages.map((msg, index) => (
+            <MessageBubble key={msg.id} message={msg} index={index} />
+          ))}
 
-        {isTyping && <TypingIndicator />}
-      </ScrollView>
+          {isTyping && <TypingIndicator />}
+          
+          {/* Padding at the bottom so the last message isn't hidden by the button */}
+          <View style={{ height: 100 }} />
+        </ScrollView>
+
+        {/* Next Button — appears at the bottom after chat finishes */}
+        {isFinished && (
+          <Animated.View style={styles.nextButtonContainer}>
+            <TouchableOpacity 
+              style={styles.nextButton}
+              onPress={onAllMessagesShown}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.nextButtonText}>What should I do?</Text>
+              <MaterialCommunityIcons name="arrow-right" size={20} color="#FFF" />
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+      </View>
     </View>
   );
 }
@@ -344,5 +371,27 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: colors.textSecondary,
+  },
+  nextButtonContainer: {
+    position: "absolute",
+    bottom: spacing.xl,
+    left: spacing.lg,
+    right: spacing.lg,
+    zIndex: 10,
+  },
+  nextButton: {
+    backgroundColor: colors.primary,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: spacing.md,
+    borderRadius: radii.md,
+    gap: spacing.sm,
+    ...shadows.card,
+  },
+  nextButtonText: {
+    color: "#FFFFFF",
+    fontSize: typography.md,
+    fontWeight: "700",
   },
 });

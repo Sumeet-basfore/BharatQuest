@@ -4,6 +4,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors, spacing, typography, radii } from "../../config/theme";
 import { useGame } from "../../context/GameContext";
 import { PrimaryButton } from "../common/PrimaryButton";
+import { saveOnboardingComplete } from "../../services/storage";
 
 export function OnboardingModal() {
   const { state, dispatch } = useGame();
@@ -25,6 +26,7 @@ export function OnboardingModal() {
 
   const completeOnboarding = () => {
     dispatch({ type: "COMPLETE_ONBOARDING" });
+    saveOnboardingComplete();
   };
 
   return (

@@ -13,11 +13,23 @@ const STORAGE_KEYS = {
   currentLevel: "bharatquest.currentLevel",
   language: "bharatquest.language",
   assistedMode: "bharatquest.assistedMode",
+  onboardingComplete: "bharatquest.onboardingComplete",
+  hasSeenRewardBanner: "bharatquest.hasSeenRewardBanner",
 } as const;
 
 export async function loadGameSnapshot() {
-  const [balanceRaw, trustRaw, flowRaw, decisionRaw, syncRaw, levelRaw, langRaw, assistedRaw] =
-    await AsyncStorage.multiGet([
+  const [
+    balanceRaw, 
+    trustRaw, 
+    flowRaw, 
+    decisionRaw, 
+    syncRaw, 
+    levelRaw, 
+    langRaw, 
+    assistedRaw,
+    onboardingRaw,
+    rewardSeenRaw
+  ] = await AsyncStorage.multiGet([
       STORAGE_KEYS.balance,
       STORAGE_KEYS.trustScore,
       STORAGE_KEYS.flowStep,
@@ -26,6 +38,8 @@ export async function loadGameSnapshot() {
       STORAGE_KEYS.currentLevel,
       STORAGE_KEYS.language,
       STORAGE_KEYS.assistedMode,
+      STORAGE_KEYS.onboardingComplete,
+      STORAGE_KEYS.hasSeenRewardBanner,
     ]);
 
   const getValue = (pair: [string, string | null]) => pair[1];
@@ -39,6 +53,8 @@ export async function loadGameSnapshot() {
     currentLevel: Number(getValue(levelRaw as [string, string | null]) ?? 1),
     language: (getValue(langRaw as [string, string | null]) ?? "en") as "en" | "hi" | "as",
     assistedMode: getValue(assistedRaw as [string, string | null]) === "true",
+    onboardingComplete: getValue(onboardingRaw as [string, string | null]) === "true",
+    hasSeenRewardBanner: getValue(rewardSeenRaw as [string, string | null]) === "true",
   };
 }
 
@@ -51,8 +67,10 @@ export async function saveGameSnapshot(snapshot: {
   currentLevel: number;
   language: "en" | "hi" | "as";
   assistedMode: boolean;
+  onboardingComplete?: boolean;
+  hasSeenRewardBanner?: boolean;
 }) {
-  await AsyncStorage.multiSet([
+  const data: [string, string][] = [
     [STORAGE_KEYS.balance, String(snapshot.balance)],
     [STORAGE_KEYS.trustScore, String(snapshot.trustScore)],
     [STORAGE_KEYS.flowStep, snapshot.flowStep],
@@ -61,7 +79,24 @@ export async function saveGameSnapshot(snapshot: {
     [STORAGE_KEYS.currentLevel, String(snapshot.currentLevel)],
     [STORAGE_KEYS.language, snapshot.language],
     [STORAGE_KEYS.assistedMode, String(snapshot.assistedMode)],
-  ]);
+  ];
+
+  if (snapshot.onboardingComplete !== undefined) {
+    data.push([STORAGE_KEYS.onboardingComplete, String(snapshot.onboardingComplete)]);
+  }
+  if (snapshot.hasSeenRewardBanner !== undefined) {
+    data.push([STORAGE_KEYS.hasSeenRewardBanner, String(snapshot.hasSeenRewardBanner)]);
+  }
+
+  await AsyncStorage.multiSet(data);
+}
+
+export async function saveOnboardingComplete() {
+  await AsyncStorage.setItem(STORAGE_KEYS.onboardingComplete, "true");
+}
+
+export async function saveRewardBannerSeen() {
+  await AsyncStorage.setItem(STORAGE_KEYS.hasSeenRewardBanner, "true");
 }
 
 export async function resetGameSnapshot() {

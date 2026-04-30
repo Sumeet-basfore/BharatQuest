@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MainTabNavigator } from "./MainTabNavigator";
-import { RewardPopupScreen } from "../screens/RewardPopupScreen";
 import { ChatScreen } from "../screens/ChatScreen";
 import { DecisionScreen } from "../screens/DecisionScreen";
 import { ResultScreen } from "../screens/ResultScreen";
@@ -27,11 +26,14 @@ export function RootNavigator() {
         dispatch({ type: "SET_LEVEL", payload: snapshot.currentLevel });
         dispatch({ type: "SET_LANGUAGE", payload: snapshot.language });
 
-        // Infer onboarding completion from persisted state:
-        // If we've progressed past level 1 or flowStep isn't dashboard,
-        // the user has already completed onboarding.
-        if (snapshot.currentLevel > 1 || snapshot.flowStep !== "dashboard") {
+        // Restore onboarding completion from persisted flag
+        if (snapshot.onboardingComplete) {
           dispatch({ type: "COMPLETE_ONBOARDING" });
+        }
+
+        // Restore reward banner seen state so auto-advance doesn't re-trigger
+        if (snapshot.hasSeenRewardBanner) {
+          dispatch({ type: "MARK_REWARD_SEEN" });
         }
 
         // Restore assisted mode
@@ -56,7 +58,6 @@ export function RootNavigator() {
         {/* Main app: tabbed home/learn/profile */}
         <Stack.Screen name="Main" component={MainTabNavigator} />
         {/* Full-screen modal flows (layered on top of tabs) */}
-        <Stack.Screen name="RewardPopupScreen" component={RewardPopupScreen} />
         <Stack.Screen name="ChatScreen" component={ChatScreen} />
         <Stack.Screen name="DecisionScreen" component={DecisionScreen} />
         <Stack.Screen name="ResultScreen" component={ResultScreen} />

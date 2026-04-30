@@ -5,6 +5,7 @@ import { ScreenShell } from "../components/common/ScreenShell";
 import { RewardBanner } from "../components/game/RewardBanner";
 import { HUDStat } from "../components/common/HUDStat";
 import { useGame } from "../context/GameContext";
+import { saveRewardBannerSeen } from "../services/storage";
 import { colors, spacing, timing } from "../config/theme";
 import { useContent } from "../config/content";
 import { Audio } from "expo-av";
@@ -26,6 +27,7 @@ export function RewardPopupScreen({ navigation }: any) {
 
   const handleDismiss = () => {
     dispatch({ type: "MARK_REWARD_SEEN" });
+    saveRewardBannerSeen();
     dispatch({ type: "SET_FLOW_STEP", payload: "chat" });
     navigation.replace("ChatScreen");
   };
