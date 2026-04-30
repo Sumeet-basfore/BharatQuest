@@ -27,7 +27,6 @@ const initialState: GameState = {
   badges: [],
   trustedContact: null,
 };
-};
 
 function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
