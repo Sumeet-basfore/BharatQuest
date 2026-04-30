@@ -40,6 +40,8 @@ export function ScamChat({
   const scrollRef = useRef<ScrollView>(null);
   const messages = levelData.chat.messages as unknown as ChatMessage[];
 
+  const actualDelay = state.assistedMode ? 3500 : messageDelay;
+
   useEffect(() => {
     let currentIndex = 0;
     const timers: NodeJS.Timeout[] = [];
@@ -80,7 +82,7 @@ export function ScamChat({
             }
           }, 1200));
         }
-      }, messageDelay));
+      }, actualDelay));
     };
 
     timers.push(setTimeout(showNextMessage, 800));
