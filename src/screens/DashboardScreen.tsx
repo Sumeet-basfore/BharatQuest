@@ -138,7 +138,7 @@ export function DashboardScreen({ navigation }: any) {
                 <View style={styles.txDetails}>
                   <Text style={styles.txTitle}>{level.title}</Text>
                   <Text style={styles.txDate}>
-                    {isCompleted ? "Completed" : isActive ? "Active Threat" : `Locked (Complete Mission ${level.id - 1})`}
+                    {isCompleted ? content.learn.statusCompleted : isActive ? content.learn.statusActive : `${content.learn.statusLocked} ${level.id - 1}`}
                   </Text>
                 </View>
                 {isUnlocked ? (
@@ -171,9 +171,9 @@ export function DashboardScreen({ navigation }: any) {
 
         {/* 🔴 Demo Tool: Simulate Scam SMS — triggers full interception flow */}
         <View style={styles.ledgerSection}>
-          <Text style={styles.ledgerTitle}>Demo Tools</Text>
+          <Text style={styles.ledgerTitle}>{content.demo.title}</Text>
           <PrimaryButton
-            label="Simulate Scam SMS"
+            label={content.demo.simulateSms}
             color={colors.warningRed}
             icon="message-alert"
             onPress={() => {
@@ -190,7 +190,7 @@ export function DashboardScreen({ navigation }: any) {
         
         {/* Settings Section */}
         <View style={styles.ledgerSection}>
-          <Text style={styles.ledgerTitle}>Settings</Text>
+          <Text style={styles.ledgerTitle}>{content.demo.settingsTitle}</Text>
 
           <View style={styles.settingsRow}>
             <Text style={styles.txTitle}>{content.settings?.language || "Language"}</Text>
