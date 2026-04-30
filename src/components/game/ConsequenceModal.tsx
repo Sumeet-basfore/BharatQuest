@@ -82,6 +82,13 @@ function FailureContent({ onDismiss }: { onDismiss: () => void }) {
         <Text style={styles.tipText}>{f.tips[0]}</Text>
       </View>
 
+      {state.assistedMode && f.grandchildTip && (
+        <View style={[styles.tipBox, { marginTop: spacing.sm, borderLeftColor: colors.primary, backgroundColor: "rgba(99,102,241,0.05)" }]}>
+          <Text style={[styles.tipTitle, { color: colors.primary }]}>Teaching Tip:</Text>
+          <Text style={styles.tipText}>{f.grandchildTip}</Text>
+        </View>
+      )}
+
       <PrimaryButton label={f.dismissLabel} color={colors.warningRed} onPress={onDismiss} icon="refresh" />
     </View>
   );
@@ -112,6 +119,13 @@ function SuccessContent({ onDismiss }: { onDismiss: () => void }) {
           <Text style={styles.statValueSuccess}>+{SUCCESS_TRUST_GAIN}</Text>
         </View>
       </View>
+
+      {state.assistedMode && s.grandchildTip && (
+        <View style={[styles.tipBox, { borderLeftColor: colors.primary, backgroundColor: "rgba(99,102,241,0.05)" }]}>
+          <Text style={[styles.tipTitle, { color: colors.primary }]}>Teaching Tip:</Text>
+          <Text style={styles.tipText}>{s.grandchildTip}</Text>
+        </View>
+      )}
 
       <View style={styles.actionRow}>
         <TouchableOpacity 
