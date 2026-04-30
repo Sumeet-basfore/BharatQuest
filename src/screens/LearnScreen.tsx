@@ -90,22 +90,23 @@ export function LearnScreen({ navigation }: any) {
             YOUR MISSIONS
           </Text>
           {content.levels.map((level) => {
-            const isCompleted = state.currentLevel > level.id;
-            const isActive = state.currentLevel === level.id;
-            const isLocked = state.currentLevel < level.id;
+            const isCompleted = state.highestLevel > level.id;
+            const isHighestActive = state.highestLevel === level.id;
+            const isLocked = state.highestLevel < level.id;
 
             return (
               <TouchableOpacity
                 key={level.id}
                 style={[
                   styles.missionCard,
-                  { backgroundColor: cardBg, borderColor: isActive ? colors.primary : cardBorder },
-                  isActive && styles.missionCardActive,
+                  { backgroundColor: cardBg, borderColor: isHighestActive ? colors.primary : cardBorder },
+                  isHighestActive && styles.missionCardActive,
                   isLocked && { opacity: 0.55 },
                 ]}
-                activeOpacity={isActive ? 0.75 : 1}
+                activeOpacity={isLocked ? 1 : 0.75}
                 onPress={() => {
-                  if (!isActive) return;
+                  if (isLocked) return;
+                  dispatch({ type: "SET_LEVEL", payload: level.id });
                   dispatch({ type: "SET_DECISION", payload: null });
                   dispatch({ type: "SET_CHAT_INDEX", payload: -1 });
                   dispatch({ type: "SET_SYNC_STATUS", payload: "idle" });
@@ -114,13 +115,13 @@ export function LearnScreen({ navigation }: any) {
                 }}
               >
                 {/* Left accent bar */}
-                {isActive && <View style={styles.activeBar} />}
+                {isHighestActive && <View style={styles.activeBar} />}
 
                 <View
                   style={[
                     styles.missionIconBox,
                     {
-                      backgroundColor: isActive
+                      backgroundColor: isHighestActive
                         ? "rgba(99,102,241,0.15)"
                         : isDark ? colors.surfaceLight : "#EBF4FF",
                     },
@@ -129,22 +130,22 @@ export function LearnScreen({ navigation }: any) {
                   <MaterialCommunityIcons
                     name={MISSION_ICONS[level.id] as any}
                     size={26}
-                    color={isCompleted ? colors.successGreen : isActive ? colors.primary : textMuted}
+                    color={isCompleted ? colors.successGreen : isHighestActive ? colors.primary : textMuted}
                   />
                 </View>
 
                 <View style={styles.missionInfo}>
                   <Text style={[styles.missionTitle, { color: textPrimary, fontSize: 15 * fontScale }]}>
-                    {level.id}. {level.title}
+                    {level.title}
                   </Text>
                   <Text style={[styles.missionStatus, { color: textMuted, fontSize: 12 * fontScale }]}>
-                    {isCompleted ? "Completed" : isActive ? "Active Threat" : `Locked – complete Mission ${level.id - 1}`}
+                    {isCompleted ? "Completed" : isHighestActive ? "Active Threat" : `Locked – complete Mission ${level.id - 1}`}
                   </Text>
                 </View>
 
                 {isCompleted ? (
-                  <MaterialCommunityIcons name="check-circle" size={24} color={colors.successGreen} />
-                ) : isActive ? (
+                  <MaterialCommunityIcons name="refresh" size={24} color={colors.successGreen} />
+                ) : isHighestActive ? (
                   <MaterialCommunityIcons name="chevron-right" size={24} color={colors.primary} />
                 ) : (
                   <MaterialCommunityIcons name="lock-outline" size={20} color={textMuted} />
@@ -187,13 +188,13 @@ export function LearnScreen({ navigation }: any) {
               Mission Progress
             </Text>
             <Text style={[styles.bannerBody, { color: textSecondary, fontSize: 13 * fontScale }]}>
-              {state.currentLevel - 1} of {content.levels.length} scams defeated
+              {state.highestLevel - 1} of {content.levels.length} scams defeated
             </Text>
             <View style={[styles.progressTrack, { backgroundColor: isDark ? colors.surfaceLight : "#D1D5DB" }]}>
               <View
                 style={[
                   styles.progressFill,
-                  { width: `${Math.round(((state.currentLevel - 1) / content.levels.length) * 100)}%` as any },
+                  { width: `${Math.round(((state.highestLevel - 1) / content.levels.length) * 100)}%` as any },
                 ]}
               />
             </View>

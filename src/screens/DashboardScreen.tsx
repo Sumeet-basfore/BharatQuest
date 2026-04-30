@@ -4,7 +4,7 @@ import { View, StyleSheet, TouchableOpacity, Text, ScrollView } from "react-nati
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ScreenShell } from "../components/common/ScreenShell";
 import { HUDStat } from "../components/common/HUDStat";
-import { FarmBackdrop } from "../components/game/FarmBackdrop";
+import { FinanceBackdrop } from "../components/game/FinanceBackdrop";
 import { OnboardingModal } from "../components/game/OnboardingModal";
 import { useGame } from "../context/GameContext";
 import { colors, spacing, timing, typography, radii, shadows } from "../config/theme";
@@ -70,7 +70,7 @@ export function DashboardScreen({ navigation }: any) {
 
       <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.backdropContainer}>
-          <FarmBackdrop />
+          <FinanceBackdrop />
         </View>
 
         <View style={styles.ledgerSection}>

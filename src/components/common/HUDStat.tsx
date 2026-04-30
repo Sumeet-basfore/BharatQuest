@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, Animated, Easing } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors, typography, spacing, radii } from "../../config/theme";
+import { useGame } from "../../context/GameContext";
 
 interface HUDStatProps {
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
@@ -40,6 +41,8 @@ export function HUDStat({
   const isFirstRender = useRef(true);
 
   const target = animateTo !== undefined ? animateTo : value;
+  const { state } = useGame();
+  const isDark = state.darkMode;
 
   useEffect(() => {
     const listener = animRef.addListener(({ value: v }) => {
@@ -106,21 +109,28 @@ export function HUDStat({
     <Animated.View
       style={[
         styles.container,
-        { transform: [{ scale: scaleRef }] },
+        { 
+          transform: [{ scale: scaleRef }],
+          backgroundColor: isDark ? colors.surface : "#FFFFFF",
+          borderColor: isDark ? "transparent" : "#E2E8F0",
+          borderWidth: isDark ? 0 : 1,
+        },
       ]}
     >
-      <View style={styles.topRow}>
-        <MaterialCommunityIcons
-          name={icon}
-          size={22}
-          color={flashColor || iconColor}
-        />
-        <View style={styles.textCol}>
-          <Text style={styles.label}>{label}</Text>
+      <View style={styles.contentCol}>
+        <Text style={[styles.label, { color: isDark ? colors.textSecondary : "#4A5568", marginBottom: 2 }]}>{label}</Text>
+        <View style={styles.valueRow}>
+          <View style={[styles.coin, { backgroundColor: flashColor || iconColor }]}>
+            <MaterialCommunityIcons
+              name={icon}
+              size={14}
+              color={isDark ? colors.surface : "#FFFFFF"}
+            />
+          </View>
           <Text
             style={[
               styles.value,
-              { color: flashColor || valueColor },
+              { color: flashColor || (valueColor === colors.textPrimary && !isDark ? "#1A202C" : valueColor) },
             ]}
           >
             {prefix}
@@ -131,7 +141,7 @@ export function HUDStat({
       </View>
       
       {showProgressBar && (
-        <View style={styles.progressTrack}>
+        <View style={[styles.progressTrack, { backgroundColor: isDark ? "rgba(255, 255, 255, 0.1)" : "#E2E8F0" }]}>
           <Animated.View 
             style={[
               styles.progressFill, 
@@ -147,20 +157,26 @@ export function HUDStat({
 const styles = StyleSheet.create({
   container: {
     flexDirection: "column",
-    backgroundColor: colors.surface,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: radii.lg,
     minWidth: 140,
     gap: spacing.xs,
   },
-  topRow: {
+  contentCol: {
+    flexDirection: "column",
+  },
+  valueRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.sm,
   },
-  textCol: {
-    flexDirection: "column",
+  coin: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
   },
   label: {
     fontSize: typography.xs,

@@ -6,7 +6,6 @@ import { ScreenShell } from "../components/common/ScreenShell";
 import { ConsequenceModal } from "../components/game/ConsequenceModal";
 import { SyncOverlay } from "../components/game/SyncOverlay";
 import { HUDStat } from "../components/common/HUDStat";
-import { FarmBackdrop } from "../components/game/FarmBackdrop";
 import { useGame } from "../context/GameContext";
 import { useVoiceNarration } from "../hooks/useVoiceNarration";
 import { colors, spacing } from "../config/theme";
@@ -56,7 +55,8 @@ export function ResultScreen({ navigation }: any) {
     } else {
       newTrust = Math.min(100, state.trustScore + SUCCESS_TRUST_GAIN);
       if (state.currentLevel <= content.levels.length) {
-         newLevel = Math.min(state.currentLevel + 1, content.levels.length + 1);
+         let nextLevel = state.currentLevel + 1;
+         newLevel = Math.max(state.highestLevel || 1, Math.min(nextLevel, content.levels.length + 1));
          dispatch({ type: "SET_LEVEL", payload: newLevel });
       }
     }
@@ -110,9 +110,7 @@ export function ResultScreen({ navigation }: any) {
         </View>
       </View>
 
-      <View style={styles.content}>
-        <FarmBackdrop />
-      </View>
+
 
       {/* Animated flash — fades out after 400ms */}
       <Animated.View

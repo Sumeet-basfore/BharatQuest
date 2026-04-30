@@ -34,15 +34,6 @@ export function HomeScreen({ navigation }: any) {
     }
   };
 
-  useEffect(() => {
-    if (state.flowStep === "dashboard" && state.hasCompletedOnboarding && !state.hasSeenRewardBanner) {
-      const timer = setTimeout(() => {
-        dispatch({ type: "SET_FLOW_STEP", payload: "reward" });
-        navigation.navigate("RewardPopupScreen");
-      }, timing.dashboardToReward);
-      return () => clearTimeout(timer);
-    }
-  }, [state.flowStep, state.hasCompletedOnboarding, state.hasSeenRewardBanner]);
 
   // Dynamic theme
   const isDark = state.darkMode;
@@ -85,7 +76,7 @@ export function HomeScreen({ navigation }: any) {
             icon="currency-inr"
             label={content.dashboard.balanceLabel}
             value={state.balance}
-            iconColor={colors.balanceGreen}
+            iconColor={colors.trustGold}
             animateTo={state.balance}
           />
           <HUDStat

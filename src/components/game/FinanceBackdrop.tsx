@@ -1,13 +1,13 @@
-// BharatQuest – Farm Backdrop
-// Static 2D village farm illustration for the dashboard
+// BharatQuest – Finance Backdrop
+// Static 2D digital finance illustration for the app background
 
 import React from "react";
 import { View, Image, StyleSheet, Dimensions } from "react-native";
 
-const farmImage = require("../../assets/images/farm_backdrop.png");
+const farmImage = require("../../assets/images/finance_backdrop.png");
 const { width } = Dimensions.get("window");
 
-export function FarmBackdrop() {
+export function FinanceBackdrop() {
   return (
     <View style={styles.container}>
       <Image

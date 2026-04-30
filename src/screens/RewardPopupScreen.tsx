@@ -4,7 +4,6 @@ import { View, StyleSheet } from "react-native";
 import { ScreenShell } from "../components/common/ScreenShell";
 import { RewardBanner } from "../components/game/RewardBanner";
 import { HUDStat } from "../components/common/HUDStat";
-import { FarmBackdrop } from "../components/game/FarmBackdrop";
 import { useGame } from "../context/GameContext";
 import { colors, spacing, timing } from "../config/theme";
 import { useContent } from "../config/content";
@@ -35,16 +34,14 @@ export function RewardPopupScreen({ navigation }: any) {
     <ScreenShell>
       <View style={styles.header}>
         <View style={styles.hudRow}>
-          <HUDStat icon="currency-inr" label={content.dashboard.balanceLabel} value={state.balance} iconColor={colors.balanceGreen} />
+          <HUDStat icon="currency-inr" label={content.dashboard.balanceLabel} value={state.balance} iconColor={colors.trustGold} />
           <HUDStat icon="shield-check" label={content.dashboard.trustLabel} value={state.trustScore} suffix="/100" />
         </View>
+
+
+        {/* State 2 Overlay */}
+        <RewardBanner onDismiss={handleDismiss} autoDismissMs={timing.rewardToChat} />
       </View>
-      <View style={styles.content}>
-        <FarmBackdrop />
-      </View>
-      
-      {/* State 2 Overlay */}
-      <RewardBanner onDismiss={handleDismiss} autoDismissMs={timing.rewardToChat} />
     </ScreenShell>
   );
 }

@@ -30,6 +30,7 @@ export interface GameState {
   hasSeenRewardBanner: boolean;
   hasCompletedOnboarding: boolean;
   currentLevel: number;
+  highestLevel: number;
   language: "en" | "hi" | "as";
   assistedMode: boolean;
   activeSmsAlert: SmsAlert | null;

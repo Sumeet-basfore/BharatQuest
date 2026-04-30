@@ -21,11 +21,12 @@ const initialState: GameState = {
   hasSeenRewardBanner: false,
   hasCompletedOnboarding: false,
   currentLevel: 1,
+  highestLevel: 1,
   language: "en",
   assistedMode: false,
   activeSmsAlert: null,
   badges: [],
-  darkMode: true,
+  darkMode: false,
   fontSize: "medium",
 };
 
@@ -54,7 +55,11 @@ function gameReducer(state: GameState, action: GameAction): GameState {
     case "COMPLETE_ONBOARDING":
       return { ...state, hasCompletedOnboarding: true };
     case "SET_LEVEL":
-      return { ...state, currentLevel: action.payload };
+      return { 
+        ...state, 
+        currentLevel: action.payload,
+        highestLevel: Math.max(state.highestLevel || 1, action.payload)
+      };
     case "SET_LANGUAGE":
       return { ...state, language: action.payload };
     case "TOGGLE_ASSISTED_MODE":
