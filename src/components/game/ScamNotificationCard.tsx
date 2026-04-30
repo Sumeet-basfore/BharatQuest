@@ -74,6 +74,8 @@ export function ScamNotificationCard({ onPress }: ScamNotificationCardProps) {
     levelData.id === 1 ? colors.scamGreen :
     levelData.id === 2 ? colors.deceptiveBlue : colors.warningRed;
 
+  const isDark = state.darkMode;
+
   return (
     <Animated.View
       style={[
@@ -85,7 +87,13 @@ export function ScamNotificationCard({ onPress }: ScamNotificationCardProps) {
       ]}
     >
       <TouchableOpacity
-        style={styles.card}
+        style={[
+          styles.card,
+          {
+            backgroundColor: isDark ? colors.surface : "#FFFFFF",
+            borderColor: isDark ? colors.surfaceLight : "#E2E8F0",
+          }
+        ]}
         activeOpacity={0.8}
         onPress={onPress}
       >
@@ -100,7 +108,7 @@ export function ScamNotificationCard({ onPress }: ScamNotificationCardProps) {
             </View>
             <View style={styles.senderInfo}>
               <View style={styles.nameRow}>
-                <Text style={styles.senderName} numberOfLines={1}>
+                <Text style={[styles.senderName, { color: isDark ? colors.textPrimary : "#1A202C" }]} numberOfLines={1}>
                   {levelData.reward.brandName}
                 </Text>
                 <MaterialCommunityIcons
@@ -117,15 +125,15 @@ export function ScamNotificationCard({ onPress }: ScamNotificationCardProps) {
           </View>
 
           {/* Message body */}
-          <Text style={styles.messageTitle} numberOfLines={1}>
+          <Text style={[styles.messageTitle, { color: isDark ? colors.textPrimary : "#1A202C" }]} numberOfLines={1}>
             {levelData.reward.title}
           </Text>
-          <Text style={styles.messagePreview} numberOfLines={2}>
+          <Text style={[styles.messagePreview, { color: isDark ? colors.textSecondary : "#4A5568" }]} numberOfLines={2}>
             {levelData.reward.subtitle} {levelData.reward.cta}
           </Text>
 
           {/* CTA row */}
-          <View style={styles.ctaRow}>
+          <View style={[styles.ctaRow, { borderTopColor: isDark ? colors.surfaceLight : "#E2E8F0" }]}>
             <Text style={styles.ctaText}>Tap to view message</Text>
             <MaterialCommunityIcons
               name="chevron-right"
@@ -145,12 +153,10 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   card: {
-    backgroundColor: colors.surface,
     borderRadius: radii.lg,
     flexDirection: "row",
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: colors.surfaceLight,
     ...shadows.card,
   },
   accentStripe: {

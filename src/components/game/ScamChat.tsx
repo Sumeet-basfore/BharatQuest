@@ -126,7 +126,7 @@ export function ScamChat({
         >
           {/* Timestamp */}
           <View style={styles.timestampRow}>
-            <Text style={styles.timestamp}>Today, 2:34 PM</Text>
+            <Text style={styles.timestamp}>{content.chatScreen.today}, 2:34 PM</Text>
           </View>
 
           {visibleMessages.map((msg, index) => (
@@ -147,7 +147,7 @@ export function ScamChat({
               onPress={onAllMessagesShown}
               activeOpacity={0.8}
             >
-              <Text style={styles.nextButtonText}>What should I do?</Text>
+              <Text style={styles.nextButtonText}>{content.chatScreen.whatShouldIDo}</Text>
               <MaterialCommunityIcons name="arrow-right" size={20} color="#FFF" />
             </TouchableOpacity>
           </Animated.View>

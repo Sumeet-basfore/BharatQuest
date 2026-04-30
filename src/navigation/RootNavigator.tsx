@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MainTabNavigator } from "./MainTabNavigator";
+import { RewardPopupScreen } from "../screens/RewardPopupScreen";
 import { ChatScreen } from "../screens/ChatScreen";
 import { DecisionScreen } from "../screens/DecisionScreen";
 import { ResultScreen } from "../screens/ResultScreen";
@@ -43,24 +44,14 @@ export function RootNavigator({ onLogout }: RootNavigatorProps) {
             if (snapshot.currentLevel) dispatch({ type: "SET_LEVEL", payload: snapshot.currentLevel });
             if (snapshot.language) dispatch({ type: "SET_LANGUAGE", payload: snapshot.language });
 
-<<<<<<< Updated upstream
-        // Restore onboarding completion from persisted flag
-        if (snapshot.onboardingComplete) {
-          dispatch({ type: "COMPLETE_ONBOARDING" });
-        }
-
-        // Restore reward banner seen state so auto-advance doesn't re-trigger
-        if (snapshot.hasSeenRewardBanner) {
-          dispatch({ type: "MARK_REWARD_SEEN" });
-        }
-
-        // Restore assisted mode
-        if (snapshot.assistedMode) {
-          dispatch({ type: "TOGGLE_ASSISTED_MODE" });
-=======
-            // Infer onboarding completion
-            if (snapshot.currentLevel > 1 || snapshot.flowStep !== "dashboard") {
+            // Merged: Teammate's explicit onboarding flag OR our level inference
+            if (snapshot.onboardingComplete || snapshot.currentLevel > 1 || snapshot.flowStep !== "dashboard") {
               dispatch({ type: "COMPLETE_ONBOARDING" });
+            }
+
+            // Merged: Teammate's reward banner state
+            if (snapshot.hasSeenRewardBanner) {
+              dispatch({ type: "MARK_REWARD_SEEN" });
             }
 
             // Restore assisted mode
@@ -70,7 +61,6 @@ export function RootNavigator({ onLogout }: RootNavigatorProps) {
           } else {
             console.log(`New player detected: ${activeUser.username}. Starting fresh.`);
           }
->>>>>>> Stashed changes
         }
       } catch (error) {
         console.error("[RootNavigator] Failed to load snapshot:", error);
@@ -86,18 +76,14 @@ export function RootNavigator({ onLogout }: RootNavigatorProps) {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false, animation: "fade" }}>
-<<<<<<< Updated upstream
         {/* Main app: tabbed home/learn/profile */}
-        <Stack.Screen name="Main" component={MainTabNavigator} />
-        {/* Full-screen modal flows (layered on top of tabs) */}
-=======
-        {/* 2. Pass onLogout to the MainTabNavigator using a render function */}
+        {/* Merged: Keep our onLogout prop passing setup */}
         <Stack.Screen name="Main">
           {(props) => <MainTabNavigator {...props} onLogout={onLogout} />}
         </Stack.Screen>
         
+        {/* Full-screen modal flows (layered on top of tabs) */}
         <Stack.Screen name="RewardPopupScreen" component={RewardPopupScreen} />
->>>>>>> Stashed changes
         <Stack.Screen name="ChatScreen" component={ChatScreen} />
         <Stack.Screen name="DecisionScreen" component={DecisionScreen} />
         <Stack.Screen name="ResultScreen" component={ResultScreen} />

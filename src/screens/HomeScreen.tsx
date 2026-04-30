@@ -66,7 +66,7 @@ export function HomeScreen({ navigation }: any) {
 
   const fontScale =
     state.fontSize === "small" ? 0.88 :
-    state.fontSize === "large" ? 1.14 : 1;
+      state.fontSize === "large" ? 1.14 : 1;
 
   // Credit score derived from trustScore
   const creditScore = 300 + Math.round(state.trustScore * 6.5);
@@ -74,12 +74,12 @@ export function HomeScreen({ navigation }: any) {
   // Sync progress percentage
   const syncProgress =
     state.syncStatus === "success" ? 100 :
-    state.syncStatus === "syncing" ? 60 :
-    state.syncStatus === "idle" && state.decision !== null ? 30 : 0;
+      state.syncStatus === "syncing" ? 60 :
+        state.syncStatus === "idle" && state.decision !== null ? 30 : 0;
 
   const creditColor =
     creditScore >= 750 ? colors.successGreen :
-    creditScore >= 650 ? colors.trustGold : colors.warningRed;
+      creditScore >= 650 ? colors.trustGold : colors.warningRed;
 
   return (
     <ScreenShell>
@@ -123,7 +123,7 @@ export function HomeScreen({ navigation }: any) {
         {/* ── Credit Score Card ── */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>
-            CREDIT SCORE
+            {content.home.creditScoreTitle}
           </Text>
           <View style={[styles.creditCard, { backgroundColor: cardBg, borderColor: cardBorder }]}>
             <View style={styles.creditLeft}>
@@ -131,56 +131,19 @@ export function HomeScreen({ navigation }: any) {
                 {creditScore}
               </Text>
               <Text style={[styles.creditLabel, { color: textMuted, fontSize: 13 * fontScale }]}>
-                {creditScore >= 750 ? "Excellent" : creditScore >= 650 ? "Good" : "Fair"}
+                {creditScore >= 750 ? content.home.excellent : creditScore >= 650 ? content.home.good : content.home.fair}
               </Text>
             </View>
             <View style={styles.creditRight}>
               <MaterialCommunityIcons name="chart-arc" size={64} color={creditColor} />
               <Text style={[styles.creditRange, { color: textMuted, fontSize: 11 * fontScale }]}>
-                Range: 300–900
+                {content.home.range}
               </Text>
             </View>
           </View>
         </View>
 
-        {/* ── Sync Progress ── */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>
-            SYNC PROGRESS
-          </Text>
-          <View style={[styles.syncCard, { backgroundColor: cardBg, borderColor: cardBorder }]}>
-            <View style={styles.syncRow}>
-              <MaterialCommunityIcons
-                name="cloud-sync"
-                size={22}
-                color={syncProgress === 100 ? colors.successGreen : colors.primary}
-              />
-              <Text style={[styles.syncLabel, { color: textPrimary, fontSize: 14 * fontScale }]}>
-                {syncProgress === 100
-                  ? "Synced to Government Portal"
-                  : syncProgress === 60
-                  ? "Syncing data…"
-                  : syncProgress === 30
-                  ? "Ready to sync"
-                  : "No pending sync"}
-              </Text>
-              <Text style={[styles.syncPct, { color: syncProgress === 100 ? colors.successGreen : colors.primary, fontSize: 14 * fontScale }]}>
-                {syncProgress}%
-              </Text>
-            </View>
-            <View style={[styles.progressTrack, { backgroundColor: isDark ? colors.surfaceLight : "#E2E8F0" }]}>
-              <View
-                style={[
-                  styles.progressFill,
-                  {
-                    width: `${syncProgress}%` as any,
-                    backgroundColor: syncProgress === 100 ? colors.successGreen : colors.primary,
-                  },
-                ]}
-              />
-            </View>
-          </View>
-        </View>
+
 
         {/* ── Recent Transactions ── */}
         <View style={styles.section}>

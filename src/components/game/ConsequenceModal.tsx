@@ -67,18 +67,18 @@ function FailureContent({ onDismiss }: { onDismiss: () => void }) {
       
       <View style={styles.statRow}>
         <View style={styles.statItem}>
-          <Text style={styles.statLabel}>Lost Balance</Text>
+          <Text style={styles.statLabel}>{content.resultScreen.lostBalance}</Text>
           <Text style={styles.statValueFail}>-₹{FAILURE_PENALTY}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.statItem}>
-          <Text style={styles.statLabel}>Trust Hit</Text>
+          <Text style={styles.statLabel}>{content.resultScreen.trustHit}</Text>
           <Text style={styles.statValueFail}>-{FAILURE_TRUST_LOSS}</Text>
         </View>
       </View>
 
       <View style={styles.tipBox}>
-        <Text style={styles.tipTitle}>Village Safety Tip:</Text>
+        <Text style={styles.tipTitle}>{content.resultScreen.villageSafetyTip}</Text>
         <Text style={styles.tipText}>{f.tips[0]}</Text>
       </View>
 
@@ -108,7 +108,7 @@ function SuccessContent({ onDismiss }: { onDismiss: () => void }) {
         </View>
         <View style={styles.divider} />
         <View style={styles.statItem}>
-          <Text style={styles.statLabel}>Trust Gained</Text>
+          <Text style={styles.statLabel}>{content.resultScreen.trustGained}</Text>
           <Text style={styles.statValueSuccess}>+{SUCCESS_TRUST_GAIN}</Text>
         </View>
       </View>

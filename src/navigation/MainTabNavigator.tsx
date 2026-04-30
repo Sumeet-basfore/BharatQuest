@@ -9,14 +9,19 @@ import { ProfileScreen } from "../screens/ProfileScreen";
 import { useGame } from "../context/GameContext";
 import { colors, radii } from "../config/theme";
 
+// Imported from the git pull update
+import { useContent } from "../config/content";
+
 const Tab = createBottomTabNavigator();
 
-// 1. Define the props to accept onLogout from RootNavigator
+// 1. Keep your props for the logout function
 type MainTabProps = {
   onLogout: () => void;
 };
 
 export function MainTabNavigator({ onLogout }: MainTabProps) {
+  // Keep the new content hook from the git pull
+  const content = useContent();
   const { state } = useGame();
   const isDark = state.darkMode;
 
@@ -61,11 +66,10 @@ export function MainTabNavigator({ onLogout }: MainTabProps) {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Learn" component={LearnScreen} />
-      
-      {/* 2. Bridge the onLogout function to the ProfileScreen component */}
-      <Tab.Screen name="Profile">
+      {/* 2. Merged: Keep the new options={{ tabBarLabel }} AND your Profile render function */}
+      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: content.nav.home }} />
+      <Tab.Screen name="Learn" component={LearnScreen} options={{ tabBarLabel: content.nav.learn }} />
+      <Tab.Screen name="Profile" options={{ tabBarLabel: content.nav.profile }}>
         {(props) => <ProfileScreen {...props} onLogout={onLogout} />}
       </Tab.Screen>
     </Tab.Navigator>

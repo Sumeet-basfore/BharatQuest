@@ -14,6 +14,7 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ScreenShell } from "../components/common/ScreenShell";
 import { useGame } from "../context/GameContext";
+import { useContent } from "../config/content";
 import { colors, spacing, radii, shadows } from "../config/theme";
 
 // 1. IMPORT syncProgressToDB here!
@@ -29,6 +30,9 @@ const FONT_OPTIONS: { label: string; value: FontSize }[] = [
 
 export function ProfileScreen({ onLogout }: { onLogout: () => void }) {
   const { state, dispatch } = useGame();
+  
+  // FIX: Initialize the content variable here so the translations work!
+  const content = useContent();
   
   const [dbUser, setDbUser] = useState<{username: string, password?: string} | null>(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -168,8 +172,9 @@ export function ProfileScreen({ onLogout }: { onLogout: () => void }) {
             <View style={styles.menuRow}>
               <View style={[styles.menuIconBox, { backgroundColor: isDark ? colors.surfaceLight : "#EBF4FF" }]}><MaterialCommunityIcons name="hand-heart-outline" size={20} color={colors.scamGreen} /></View>
               <View style={styles.menuTextBox}>
-                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>Assisted Mode</Text>
-                <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>Slower pace with extra guidance</Text>
+                {/* FIX: Optional chaining ensures no crashes if content loads slowly */}
+                <Text style={[styles.menuLabel, { color: textPrimary, fontSize: 15 * fontScale }]}>{content?.settings?.assistedMode || "Assisted Mode"}</Text>
+                <Text style={[styles.menuSub, { color: textMuted, fontSize: 12 * fontScale }]}>{content?.profile?.assistedModeSub || "Slower pace with extra guidance"}</Text>
               </View>
               <Switch value={state.assistedMode} onValueChange={() => dispatch({ type: "TOGGLE_ASSISTED_MODE" })} trackColor={{ false: "#D1D5DB", true: colors.scamGreen }} />
             </View>
