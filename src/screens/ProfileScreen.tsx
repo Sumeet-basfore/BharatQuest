@@ -59,23 +59,7 @@ export function ProfileScreen() {
             Trust Score: {state.trustScore}/100 · Credit: {creditScore}
           </Text>
 
-          {/* Language chips */}
-          <View style={styles.langRow}>
-            {(["en", "hi", "as"] as const).map((lang) => (
-              <TouchableOpacity
-                key={lang}
-                style={[
-                  styles.langChip,
-                  state.language === lang && styles.langChipActive,
-                ]}
-                onPress={() => dispatch({ type: "SET_LANGUAGE", payload: lang })}
-              >
-                <Text style={[styles.langChipText, state.language === lang && styles.langChipTextActive, { fontSize: 12 * fontScale }]}>
-                  {lang.toUpperCase()}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+
         </View>
 
         {/* ── Manage Account ── */}
@@ -272,17 +256,7 @@ const styles = StyleSheet.create({
   avatarText: { fontSize: 28, fontWeight: "800", color: "#FFFFFF" },
   profileName: { fontWeight: "800", color: "#FFFFFF" },
   profileSub: { color: "rgba(255,255,255,0.75)" },
-  langRow: { flexDirection: "row", gap: spacing.sm, marginTop: spacing.sm },
-  langChip: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: 5,
-    borderRadius: radii.full,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.4)",
-  },
-  langChipActive: { backgroundColor: "#fff" },
-  langChipText: { fontWeight: "700", color: "rgba(255,255,255,0.8)" },
-  langChipTextActive: { color: "#6366F1" },
+
   section: {
     paddingHorizontal: spacing.lg,
     marginTop: spacing.xl,

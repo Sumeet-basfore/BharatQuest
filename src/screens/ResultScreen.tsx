@@ -55,8 +55,8 @@ export function ResultScreen({ navigation }: any) {
       newTrust = Math.max(0, state.trustScore - FAILURE_TRUST_LOSS);
     } else {
       newTrust = Math.min(100, state.trustScore + SUCCESS_TRUST_GAIN);
-      if (state.currentLevel < content.levels.length) {
-         newLevel = state.currentLevel + 1;
+      if (state.currentLevel <= content.levels.length) {
+         newLevel = Math.min(state.currentLevel + 1, content.levels.length + 1);
          dispatch({ type: "SET_LEVEL", payload: newLevel });
       }
     }
