@@ -89,6 +89,28 @@ export function LearnScreen({ navigation }: any) {
           <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>
             YOUR MISSIONS
           </Text>
+
+          {/* ── Progress Banner ── */}
+          <View style={[styles.progressBanner, { backgroundColor: isDark ? "rgba(99,102,241,0.12)" : "#EBF4FF", borderColor: colors.primary }]}>
+            <MaterialCommunityIcons name="trophy-outline" size={32} color={colors.primary} />
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.bannerTitle, { color: textPrimary, fontSize: 15 * fontScale }]}>
+                Mission Progress
+              </Text>
+              <Text style={[styles.bannerBody, { color: textSecondary, fontSize: 13 * fontScale }]}>
+                {state.highestLevel - 1} of {content.levels.length} scams defeated
+              </Text>
+              <View style={[styles.progressTrack, { backgroundColor: isDark ? colors.surfaceLight : "#D1D5DB" }]}>
+                <View
+                  style={[
+                    styles.progressFill,
+                    { width: `${Math.round(((state.highestLevel - 1) / content.levels.length) * 100)}%` as any },
+                  ]}
+                />
+              </View>
+            </View>
+          </View>
+
           {content.levels.map((level) => {
             const isCompleted = state.highestLevel > level.id;
             const isHighestActive = state.highestLevel === level.id;
@@ -155,6 +177,43 @@ export function LearnScreen({ navigation }: any) {
           })}
         </View>
 
+        {/* ── Official Helpline ── */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>
+            REPORT SCAMS & COMPLAINTS
+          </Text>
+          <View style={[styles.helplineCard, { backgroundColor: cardBg, borderColor: cardBorder }]}>
+            <View style={[styles.helplineIconBox, { backgroundColor: "rgba(239, 68, 68, 0.15)" }]}>
+              <MaterialCommunityIcons name="shield-account" size={24} color="#EF4444" />
+            </View>
+            <View style={styles.helplineContent}>
+              <Text style={[styles.helplineTitle, { color: textPrimary, fontSize: 15 * fontScale }]}>
+                National Consumer Helpline (NCH)
+              </Text>
+              
+              <View style={styles.helplineRow}>
+                <MaterialCommunityIcons name="web" size={16} color={textMuted} />
+                <Text style={[styles.helplineText, { color: textMuted, fontSize: 13 * fontScale }]}>consumerhelpline.gov.in</Text>
+              </View>
+              
+              <View style={styles.helplineRow}>
+                <MaterialCommunityIcons name="phone" size={16} color={textMuted} />
+                <Text style={[styles.helplineText, { color: textMuted, fontSize: 13 * fontScale }]}>Toll-Free: 1915, 1930</Text>
+              </View>
+
+              <View style={styles.helplineRow}>
+                <MaterialCommunityIcons name="message-text" size={16} color={textMuted} />
+                <Text style={[styles.helplineText, { color: textMuted, fontSize: 13 * fontScale }]}>SMS Support: 8800001915</Text>
+              </View>
+
+              <View style={styles.helplineRow}>
+                <MaterialCommunityIcons name="email" size={16} color={textMuted} />
+                <Text style={[styles.helplineText, { color: textMuted, fontSize: 13 * fontScale }]}>dirpg-ca@nic.in</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
         {/* ── Safety Tips ── */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: textSecondary, fontSize: 12 * fontScale }]}>
@@ -180,26 +239,7 @@ export function LearnScreen({ navigation }: any) {
           ))}
         </View>
 
-        {/* ── Progress Banner ── */}
-        <View style={[styles.progressBanner, { backgroundColor: isDark ? "rgba(99,102,241,0.12)" : "#EBF4FF", borderColor: colors.primary }]}>
-          <MaterialCommunityIcons name="trophy-outline" size={32} color={colors.primary} />
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.bannerTitle, { color: textPrimary, fontSize: 15 * fontScale }]}>
-              Mission Progress
-            </Text>
-            <Text style={[styles.bannerBody, { color: textSecondary, fontSize: 13 * fontScale }]}>
-              {state.highestLevel - 1} of {content.levels.length} scams defeated
-            </Text>
-            <View style={[styles.progressTrack, { backgroundColor: isDark ? colors.surfaceLight : "#D1D5DB" }]}>
-              <View
-                style={[
-                  styles.progressFill,
-                  { width: `${Math.round(((state.highestLevel - 1) / content.levels.length) * 100)}%` as any },
-                ]}
-              />
-            </View>
-          </View>
-        </View>
+
       </ScrollView>
     </ScreenShell>
   );
@@ -279,7 +319,6 @@ const styles = StyleSheet.create({
   tipTitle: { fontWeight: "700", marginBottom: 4 },
   tipBody: { lineHeight: 18 },
   progressBanner: {
-    marginHorizontal: spacing.lg,
     borderRadius: radii.lg,
     borderWidth: 1,
     padding: spacing.lg,
@@ -300,4 +339,24 @@ const styles = StyleSheet.create({
     borderRadius: radii.full,
     backgroundColor: colors.primary,
   },
+  helplineCard: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    padding: spacing.md,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    ...shadows.card,
+  },
+  helplineIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: spacing.md,
+  },
+  helplineContent: { flex: 1, gap: 4 },
+  helplineTitle: { fontWeight: "700", marginBottom: 2 },
+  helplineRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  helplineText: {},
 });
