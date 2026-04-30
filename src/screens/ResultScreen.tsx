@@ -23,6 +23,18 @@ export function ResultScreen({ navigation }: any) {
   const [showSync, setShowSync] = useState(false);
   const isFail = state.decision === "claim";
   const [showConfetti, setShowConfetti] = useState(!isFail);
+
+  // Animated flash overlay — fades out after 400ms
+  const flashOpacity = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.timing(flashOpacity, {
+      toValue: 0,
+      duration: 400,
+      delay: 100,
+      useNativeDriver: true,
+    }).start();
+  }, []);
   
   // Narration
   useVoiceNarration({
@@ -33,23 +45,29 @@ export function ResultScreen({ navigation }: any) {
   });
 
   useEffect(() => {
-    // Apply consequence
+    // Apply consequence — clamp values to valid ranges
+    let newBalance = state.balance;
+    let newTrust = state.trustScore;
     let newLevel = state.currentLevel;
+
     if (isFail) {
-      dispatch({ type: "UPDATE_BALANCE", payload: state.balance - FAILURE_PENALTY });
-      dispatch({ type: "UPDATE_TRUST", payload: state.trustScore - FAILURE_TRUST_LOSS });
+      newBalance = Math.max(0, state.balance - FAILURE_PENALTY);
+      newTrust = Math.max(0, state.trustScore - FAILURE_TRUST_LOSS);
     } else {
-      dispatch({ type: "UPDATE_TRUST", payload: state.trustScore + SUCCESS_TRUST_GAIN });
+      newTrust = Math.min(100, state.trustScore + SUCCESS_TRUST_GAIN);
       if (state.currentLevel < content.levels.length) {
          newLevel = state.currentLevel + 1;
          dispatch({ type: "SET_LEVEL", payload: newLevel });
       }
     }
+
+    dispatch({ type: "UPDATE_BALANCE", payload: newBalance });
+    dispatch({ type: "UPDATE_TRUST", payload: newTrust });
     
     // Save to async storage
     saveGameSnapshot({
-      balance: isFail ? state.balance - FAILURE_PENALTY : state.balance,
-      trustScore: isFail ? state.trustScore - FAILURE_TRUST_LOSS : state.trustScore + SUCCESS_TRUST_GAIN,
+      balance: newBalance,
+      trustScore: newTrust,
       flowStep: "dashboard", // Demo is effectively done, return to dashboard
       decision: state.decision,
       syncComplete: false,
@@ -68,12 +86,6 @@ export function ResultScreen({ navigation }: any) {
   const handleSyncComplete = () => {
     dispatch({ type: "SET_FLOW_STEP", payload: "dashboard" });
     navigation.replace("Main");
-  };
-
-  const renderFlash = () => {
-    return (
-      <View style={[styles.flash, { backgroundColor: isFail ? colors.flashRed : colors.flashGreen }]} pointerEvents="none" />
-    );
   };
 
   return (
@@ -102,7 +114,17 @@ export function ResultScreen({ navigation }: any) {
         <FarmBackdrop />
       </View>
 
-      {renderFlash()}
+      {/* Animated flash — fades out after 400ms */}
+      <Animated.View
+        style={[
+          styles.flash,
+          {
+            backgroundColor: isFail ? colors.flashRed : colors.flashGreen,
+            opacity: flashOpacity,
+          },
+        ]}
+        pointerEvents="none"
+      />
 
       {/* State 5 Consequence Modal */}
       {!showSync && <ConsequenceModal branch={isFail ? "claim" : "report"} onDismiss={handleDismissResult} />}

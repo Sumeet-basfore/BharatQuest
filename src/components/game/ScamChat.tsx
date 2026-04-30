@@ -40,17 +40,22 @@ export function ScamChat({
 
   useEffect(() => {
     let currentIndex = 0;
+    const timers: NodeJS.Timeout[] = [];
+    let unmounted = false;
 
     const showNextMessage = () => {
-      if (currentIndex >= messages.length) {
-        setIsTyping(false);
-        onAllMessagesShown();
+      if (unmounted || currentIndex >= messages.length) {
+        if (!unmounted) {
+          setIsTyping(false);
+          onAllMessagesShown();
+        }
         return;
       }
 
       setIsTyping(true);
 
-      setTimeout(() => {
+      timers.push(setTimeout(() => {
+        if (unmounted) return;
         const msg = messages[currentIndex];
         setVisibleMessages((prev) => [...prev, msg]);
         setIsTyping(false);
@@ -63,14 +68,19 @@ export function ScamChat({
         currentIndex++;
 
         if (currentIndex < messages.length) {
-          setTimeout(showNextMessage, 600);
+          timers.push(setTimeout(showNextMessage, 600));
         } else {
-          setTimeout(onAllMessagesShown, 800);
+          timers.push(setTimeout(() => { if (!unmounted) onAllMessagesShown(); }, 800));
         }
-      }, messageDelay);
+      }, messageDelay));
     };
 
-    setTimeout(showNextMessage, 800);
+    timers.push(setTimeout(showNextMessage, 800));
+
+    return () => {
+      unmounted = true;
+      timers.forEach(clearTimeout);
+    };
   }, []);
 
   useEffect(() => {

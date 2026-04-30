@@ -23,6 +23,8 @@ const initialState: GameState = {
   currentLevel: 1,
   language: "en",
   assistedMode: false,
+  activeSmsAlert: null,
+  badges: [],
   darkMode: true,
   fontSize: "medium",
 };
@@ -57,6 +59,13 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, language: action.payload };
     case "TOGGLE_ASSISTED_MODE":
       return { ...state, assistedMode: !state.assistedMode };
+    case "SET_SMS_ALERT":
+      return { ...state, activeSmsAlert: action.payload };
+    case "SHOW_BADGE":
+      return {
+        ...state,
+        badges: state.badges.includes(action.payload) ? state.badges : [...state.badges, action.payload]
+      };
     case "TOGGLE_DARK_MODE":
       return { ...state, darkMode: !state.darkMode };
     case "SET_FONT_SIZE":

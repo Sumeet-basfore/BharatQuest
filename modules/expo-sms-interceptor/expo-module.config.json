@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["ExpoSmsInterceptorModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.smsinterceptor.ExpoSmsInterceptorModule"]
+  }
+}

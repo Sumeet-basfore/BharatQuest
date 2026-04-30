@@ -1,6 +1,11 @@
 // BharatQuest – Game State Types
 // Derived from TDD §4: Data and state model
 
+export interface SmsAlert {
+  messageBody: string;
+  sender: string;
+}
+
 export type FlowStep =
   | "dashboard"
   | "reward"
@@ -27,6 +32,8 @@ export interface GameState {
   currentLevel: number;
   language: "en" | "hi" | "as";
   assistedMode: boolean;
+  activeSmsAlert: SmsAlert | null;
+  badges: string[];
   darkMode: boolean;
   fontSize: "small" | "medium" | "large";
 }
@@ -46,6 +53,8 @@ export type GameAction =
   | { type: "SET_LEVEL"; payload: number }
   | { type: "SET_LANGUAGE"; payload: "en" | "hi" | "as" }
   | { type: "TOGGLE_ASSISTED_MODE" }
+  | { type: "SET_SMS_ALERT"; payload: SmsAlert | null }
+  | { type: "SHOW_BADGE"; payload: string }
   | { type: "TOGGLE_DARK_MODE" }
   | { type: "SET_FONT_SIZE"; payload: "small" | "medium" | "large" }
   | { type: "RESET_GAME" };

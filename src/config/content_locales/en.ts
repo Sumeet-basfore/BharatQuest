@@ -172,7 +172,7 @@ export const en = {
           { id: "m1", role: "npc", text: "Dear Customer, your bank account KYC has expired. Your account will be frozen in 24 hours." },
           { id: "m2", role: "npc", text: "To prevent your account from being blocked, we need to update your KYC immediately." },
           { id: "m3", role: "npc", text: "Please share your 16-digit ATM card number and the CVV on the back for verification." },
-          { id: "m4", role: "npc", text: "We have also sent a 6-digit OTP to your mobile number. Please share it to complete the process." },
+          { id: "m4", role: "npc", text: "We have also sent a 6-digit OTP to your mobile number. Please share it to complete the process.", isLink: true },
           { id: "m5", role: "npc", text: "⚠️ Do not ignore this message, or you will lose access to your funds.", isLink: false },
         ] as ChatMessage[],
         voiceWarning: "Caution. Bank officials will NEVER ask for your CVV, ATM card details, or OTP over chat or a phone call.",

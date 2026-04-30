@@ -1,16 +1,15 @@
 // BharatQuest – Decision Screen (State 4)
-import React, { useState } from "react";
+import React from "react";
 import { View, StyleSheet } from "react-native";
 import { ScreenShell } from "../components/common/ScreenShell";
-import { ScamChat } from "../components/game/ScamChat";
 import { DecisionSheet } from "../components/game/DecisionSheet";
 import { useGame } from "../context/GameContext";
 import { useContent } from "../config/content";
+import { colors } from "../config/theme";
 
 export function DecisionScreen({ navigation }: any) {
   const content = useContent();
   const { state, dispatch } = useGame();
-  const levelData = content.levels[Math.min(state.currentLevel - 1, content.levels.length - 1)];
 
   const handleClaim = () => {
     dispatch({ type: "SET_DECISION", payload: "claim" });
@@ -26,13 +25,8 @@ export function DecisionScreen({ navigation }: any) {
 
   return (
     <ScreenShell>
-      {/* Background stays as ChatScreen */}
-      <View style={styles.bgOverlay} pointerEvents="none">
-        <ScamChat 
-          onPhishingLinkShown={() => {}} 
-          onAllMessagesShown={() => {}} 
-        />
-      </View>
+      {/* Static dark background instead of live ScamChat (prevents duplicate timers + memory leaks) */}
+      <View style={styles.bgOverlay} pointerEvents="none" />
       
       {/* State 4 Overlay */}
       <DecisionSheet onClaim={handleClaim} onReport={handleReport} />
@@ -41,5 +35,9 @@ export function DecisionScreen({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-  bgOverlay: { ...StyleSheet.absoluteFillObject, opacity: 0.5 },
+  bgOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: colors.chatBg,
+    opacity: 0.5,
+  },
 });

@@ -18,12 +18,31 @@ export function RootNavigator() {
 
   useEffect(() => {
     async function init() {
-      const snapshot = await loadGameSnapshot();
-      dispatch({ type: "UPDATE_BALANCE", payload: snapshot.balance });
-      dispatch({ type: "UPDATE_TRUST", payload: snapshot.trustScore });
-      dispatch({ type: "SET_FLOW_STEP", payload: snapshot.flowStep });
-      dispatch({ type: "SET_DECISION", payload: snapshot.decision });
-      dispatch({ type: "SET_LEVEL", payload: snapshot.currentLevel });
+      try {
+        const snapshot = await loadGameSnapshot();
+        dispatch({ type: "UPDATE_BALANCE", payload: snapshot.balance });
+        dispatch({ type: "UPDATE_TRUST", payload: snapshot.trustScore });
+        dispatch({ type: "SET_FLOW_STEP", payload: snapshot.flowStep });
+        dispatch({ type: "SET_DECISION", payload: snapshot.decision });
+        dispatch({ type: "SET_LEVEL", payload: snapshot.currentLevel });
+        dispatch({ type: "SET_LANGUAGE", payload: snapshot.language });
+
+        // Infer onboarding completion from persisted state:
+        // If we've progressed past level 1 or flowStep isn't dashboard,
+        // the user has already completed onboarding.
+        if (snapshot.currentLevel > 1 || snapshot.flowStep !== "dashboard") {
+          dispatch({ type: "COMPLETE_ONBOARDING" });
+        }
+
+        // Restore assisted mode
+        if (snapshot.assistedMode) {
+          dispatch({ type: "TOGGLE_ASSISTED_MODE" });
+        }
+      } catch (error) {
+        console.error("[RootNavigator] Failed to load snapshot, using defaults:", error);
+        // Continue with defaults — app still works
+      }
+
       setIsReady(true);
     }
     init();

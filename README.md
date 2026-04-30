@@ -1,100 +1,333 @@
-# 🌾 BharatQuest MVP
+<p align="center">
+  <h1 align="center">🛡️ BharatQuest</h1>
+  <p align="center"><strong>India's first gamified scam defense trainer — built for the 800M who are most vulnerable.</strong></p>
+</p>
 
-**Protect Your Village. Learn to Fight Fraud.**
-
-BharatQuest is a gamified, behavioral financial literacy simulator designed specifically for rural India. Built for a 3-day hackathon, this MVP demonstrates a "Golden Path" experience that teaches users how to identify and defend against sophisticated UPI phishing scams through experiential learning and immediate consequences.
-
-It combines the experiential methodology of the **Banzai platform** with the authoritative regulatory messaging of the **Reserve Bank of India (RBI)**.
-
----
-
-## ✨ Key Features & The "Wow Factor"
-
-This MVP is built around a rigid, 6-state progression designed for a flawless live demo, elevated with premium UI features:
-
-1. **Dashboard & Mock Ledger**: Starts with a baseline ₹5,000 balance and an 80/100 Trust Score. Features a simulated recent transactions list to establish normalcy.
-2. **Deceptive Event Trigger**: A fake "UPI Reward" popup tests the user's vulnerability, enhanced with **glassmorphism (`expo-blur`)** and aggressive **haptic feedback (`expo-haptics`)**.
-3. **Voice-First AI Integration**: Simulates a WhatsApp-style scam chat. When a phishing link appears, a voice assistant actively warns the user (`expo-speech`), accompanied by a dynamic, pulsing waveform animation.
-4. **Cognitive Friction Decision Gateway**: Forces the user to choose between a tempting, pulsing "Claim Reward" button (Failure) and a stark "Report & Block" button (Success).
-5. **Immediate Consequence Engine**:
-   - **Failure Branch**: Heavy error vibration, red flash, animated loss of ₹2,000 and 20 Trust points, followed by a severe RBI educational warning ("Jaankaar Baniye, Satark Rahiye!").
-   - **Success Branch**: Pleasant success vibration, green flash, trust score boost, and a massive **confetti burst (`react-native-confetti-cannon`)** alongside a "Scam Defender" achievement badge.
-6. **Offline-First Simulation**: Culminates in a CSS-animated cloud sync sequence, proving the offline-capable architecture critical for rural "Shadow Zones."
+<p align="center">
+  <img src="https://img.shields.io/badge/React_Native-0.81-61DAFB?logo=react" />
+  <img src="https://img.shields.io/badge/Expo-54-000020?logo=expo" />
+  <img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript" />
+  <img src="https://img.shields.io/badge/Platform-Android-3DDC84?logo=android" />
+  <img src="https://img.shields.io/badge/Offline-First-28A745" />
+</p>
 
 ---
 
-## 🛠️ Tech Stack
-
-- **Framework**: React Native + Expo (Managed Workflow)
-- **Language**: TypeScript
-- **State Management**: React Context API + `useReducer`
-- **Persistence**: `@react-native-async-storage/async-storage`
-- **UI / Animations**: React Native Animated API, Expo Blur, Expo Haptics, React Native Confetti Cannon
-- **Audio / Voice**: Expo Speech, Expo AV
+> **BharatQuest intercepts real SMS messages, detects scam patterns using heuristic AI, and teaches users to protect their money — through consequences they feel, not lectures they forget.**
+>
+> It works offline. It speaks Hindi, English, and Assamese. It runs on the cheapest Android phones. And it needs zero internet to save a family from losing ₹10,000 to a fake KYC scam.
 
 ---
 
-## 🚀 Getting Started
+## 🔥 Why This Matters
 
-### Prerequisites
-- Node.js (v18+)
-- npm, yarn, or pnpm
-- Expo Go app on your iOS or Android device (for physical device testing)
-
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Sumeet-basfore/BharatQuest.git
-   cd BharatQuest
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Start the Expo development server:
-   ```bash
-   npx expo start
-   ```
-
-4. **To view on your phone** (Highly Recommended for Haptics & Blur):
-   - Scan the QR code in your terminal using the Expo Go app.
-5. **To view on the web**:
-   - Press `w` in the terminal to open the web simulator.
+- **₹1.25 lakh crore** lost to digital fraud in India in 2024 alone ([RBI Annual Report](https://www.rbi.org.in))
+- Rural users receive scam SMS in **Hindi, Assamese, and mixed scripts** — existing tools don't understand these languages
+- Traditional awareness campaigns **don't work** — people forget warnings, but they remember losing money
+- BharatQuest makes them **experience the loss in a safe simulation** so they recognize real scams before it's too late
 
 ---
 
-## 💡 Demo Controls
+## ⚡ Key Highlights
 
-For presentation purposes, the app includes a hidden reset mechanism:
-- **One-Tap Reset**: Rapidly tap the "Your Village Farm" title on the Dashboard **3 times** to instantly reset the balance to ₹5,000, Trust Score to 80/100, and restart the demo flow.
+| | Feature | Why It Matters |
+|---|---------|----------------|
+| 📱 | **Real-time SMS Interception** | Custom Android native module scans every incoming SMS for scam patterns |
+| 🧠 | **7-Pattern Heuristic AI** | Detects urgency traps, phishing links, OTP harvesting, and mixed-script scams |
+| 🌐 | **3 Languages** | Full UI + content in English, Hindi (हिन्दी), and Assamese (অসমীয়া) — switchable live |
+| 📴 | **100% Offline** | No internet needed. No API keys needed. Works in India's "shadow zones" |
+| 🎮 | **Consequence-Driven Learning** | Wrong choice = ₹ deducted + trust lost. Right choice = badge + confetti |
+| 🗣️ | **Voice-First Design** | Text-to-speech warnings for low-literacy users |
+
+---
+
+## 🎯 Demo Flow (For Judges)
+
+Here's how to experience BharatQuest in **under 2 minutes**:
+
+### Step 1 — Open the App
+You land on the **Dashboard** showing a ₹5,000 wallet balance and 80/100 Trust Score.
+
+### Step 2 — Simulate a Scam SMS
+Tap the red **"Simulate Scam SMS"** button in the Demo Tools section. This sends a realistic Hindi lottery scam through the full detection pipeline.
+
+### Step 3 — AI Detects the Scam
+The heuristic engine analyzes the message, identifies it as a scam (greed + action + mixed script), and triggers an **alert modal** with the threat analysis.
+
+### Step 4 — Play a Scam Mission
+Tap any **active mission** on the Dashboard. You'll experience:
+- A **fake reward popup** designed to look legitimate
+- A **WhatsApp-style scam chat** with a convincing NPC
+- A **voice warning** when the phishing link appears
+- A **decision point**: Claim the reward or Report & Block?
+
+### Step 5 — See the Consequence
+- **Wrong choice** → Red flash, haptic buzz, ₹2,000 deducted, trust drops, RBI warning displayed
+- **Right choice** → Green flash, confetti burst, "Scam Defender" badge earned
+
+### Step 6 — Reset for Next Judge
+**Triple-tap** the "Your Digital Wallet" title → instant clean reset to ₹5,000 / 80 trust / Level 1.
+
+> 💡 **Pro tip:** Try switching to **Hindi (HI)** in Settings before running a mission — the entire experience transforms.
+
+---
+
+## 🏗️ Architecture
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                        App.tsx                           │
+│  ┌─────────────┐  ┌─────────────────┐  ┌──────────────┐ │
+│  │ GameProvider │  │   SmsListener   │  │RootNavigator │ │
+│  │ (Context +   │  │ (Native Module  │  │ (5 screens)  │ │
+│  │  Reducer)    │  │  + Permission)  │  │              │ │
+│  └──────┬──────┘  └───────┬─────────┘  └──────┬───────┘ │
+│         │                 │                    │         │
+│         ▼                 ▼                    ▼         │
+│  ┌──────────┐    ┌──────────────┐    ┌────────────────┐  │
+│  │GameState │◄───│analyzeScam   │    │Dashboard       │  │
+│  │(balance, │    │Text()        │    │  → Reward      │  │
+│  │ trust,   │    │  → translate │    │  → Chat        │  │
+│  │ level,   │    │  → detect    │    │  → Decision    │  │
+│  │ flow...) │    │  → alert     │    │  → Result      │  │
+│  └──────────┘    └──────────────┘    └────────────────┘  │
+│         │                                                │
+│         ▼                                                │
+│  ┌──────────────┐                                        │
+│  │ AsyncStorage │                                        │
+│  │ (Persistence)│                                        │
+│  └──────────────┘                                        │
+└──────────────────────────────────────────────────────────┘
+```
+
+**Design patterns:**
+- **Context + useReducer** — 17 action types, single source of truth
+- **Screen-per-state** navigation with `fade` transitions
+- **Service layer** — storage, detection, and translation decoupled from UI
+- **Locale-driven content** — all strings loaded from locale files, zero hardcoding
+
+---
+
+## 🚀 Quick Start
+
+```bash
+# Clone & install
+git clone https://github.com/Sumeet-basfore/BharatQuest.git
+cd BharatQuest
+npm install
+
+# Option 1: Quick preview (no SMS features)
+npx expo start
+
+# Option 2: Full native build (SMS interception enabled)
+npx expo run:android
+```
+
+> **Requirements:** Node.js v18+, npm, Android device/emulator. SMS interception requires a native build (`expo run:android`), not Expo Go.
+
+---
+
+## 🎮 Game Flow
+
+```
+Dashboard ──▶ Reward Popup ──▶ Scam Chat ──▶ Decision ──▶ Result ──▶ Sync
+(Wallet)      (Fake offer)    (NPC scam)    (Claim/Report) (Win/Lose) (Cloud)
+```
+
+**Three escalating missions:**
+
+| Level | Scenario | Penalty (if fooled) | Trust Lost |
+|:-----:|----------|:-------------------:|:----------:|
+| 1 | Fake UPI Reward — phishing link | ₹2,000 | -20 |
+| 2 | QR Code Fraud — fake "receive money" | ₹5,000 | -20 |
+| 3 | Bank Impersonator — KYC scam, asks for OTP/CVV | ₹10,000 | -30 |
+
+Correct decisions earn **+10 Trust** and unlock the next level.
+
+---
+
+## 📱 SMS Interception
+
+Custom Expo native module written in Kotlin (`modules/expo-sms-interceptor/`):
+
+1. Android `BroadcastReceiver` listens for `SMS_RECEIVED_ACTION`
+2. Extracts message body + sender from incoming PDUs
+3. Emits `onSmsReceived` event to JavaScript
+4. JS listener pipes message through `analyzeScamText()`
+5. If flagged → `SmsInterceptorModal` shows threat alert
+
+**Permissions:** `READ_SMS` + `RECEIVE_SMS` — declared in `app.json`, requested at runtime.
+
+**Demo fallback:** The "Simulate Scam SMS" button triggers the exact same pipeline with no real SMS needed.
+
+---
+
+## 🧠 Scam Detection Engine
+
+Two-stage pipeline in `src/services/aiDetection.ts`:
+
+**Stage 1 — Translation:** Hindi/Assamese → English via Bhashini API (if configured) or built-in mock translator (200+ keyword mappings). **Never throws** — always returns usable text.
+
+**Stage 2 — 7 Heuristic Patterns:**
+
+| Pattern | Detection Logic | Example |
+|---------|-----------------|---------|
+| A | Urgency + Link | "KYC expired, click here" |
+| B | Greed + Action | "You won ₹50,000! Claim now" |
+| C | Auth + Warning + Link | "Verify your card at..." |
+| D | Generic + Link | "Free security check: bit.ly/..." |
+| E | High Urgency (no link) | "OTP expired, account blocked" |
+| F | Auth Harvest | "Please share your OTP" |
+| G | Mixed Script | Devanagari/Bengali + scam keywords |
+
+Wrapped in try/catch — returns `false` (safe) on any error. **Zero crash risk.**
+
+---
+
+## 🌐 Localization
+
+Three full locale files in `src/config/content_locales/`:
+
+- `en.ts` — English (251 lines)
+- `hi.ts` — Hindi (246 lines)
+- `as.ts` — Assamese (246 lines)
+
+```typescript
+const content = useContent(); // Auto-selects based on active language
+```
+
+Switchable at runtime via Dashboard toggle. Selection persists across app restarts.
 
 ---
 
 ## 📁 Project Structure
 
-```text
-BharatQuest/
-├── App.tsx                     # Entry point & Providers
-├── src/
-│   ├── assets/                 # Generated images & visual assets
-│   ├── components/
-│   │   ├── common/             # Reusable UI (Buttons, HUDStats, VoiceFab)
-│   │   └── game/               # Game-specific UI (Chat, Modals, Overlays)
-│   ├── config/
-│   │   ├── content.ts          # Centralized copy, scripts, and narrative
-│   │   └── theme.ts            # Design tokens (colors, typography, timing)
-│   ├── context/
-│   │   └── GameContext.tsx     # Global state management
-│   ├── hooks/                  # Custom hooks (Voice narration, animations)
-│   ├── navigation/             # React Navigation stack
-│   ├── screens/                # The 5 primary flow screens
-│   ├── services/               # AsyncStorage and Mock APIs
-│   └── types/                  # TypeScript interfaces
-└── ...
 ```
+BharatQuest/
+├── App.tsx                           # Entry: GameProvider + SmsListener + Navigator
+├── app.json                          # Expo config (permissions, splash, icons)
+│
+├── modules/expo-sms-interceptor/     # Custom native Android module
+│   ├── android/.../ExpoSmsInterceptorModule.kt
+│   ├── android/.../SmsReceiver.kt    # BroadcastReceiver
+│   └── src/                          # TS bindings + web stub
+│
+└── src/
+    ├── components/
+    │   ├── common/                   # HUDStat, PrimaryButton, ScreenShell, VoiceFab
+    │   └── game/                     # ScamChat, ConsequenceModal, DecisionSheet,
+    │                                 # OnboardingModal, RewardBanner, SmsInterceptorModal,
+    │                                 # FarmBackdrop, SyncOverlay
+    ├── config/
+    │   ├── theme.ts                  # Colors, typography, spacing, animation timing
+    │   ├── content.ts                # useContent() hook — locale router
+    │   └── content_locales/          # en.ts, hi.ts, as.ts
+    ├── context/GameContext.tsx        # React Context + useReducer (17 actions)
+    ├── hooks/                        # useVoiceNarration, useAnimatedValue
+    ├── navigation/RootNavigator.tsx   # 5-screen native stack
+    ├── screens/                      # Dashboard, Reward, Chat, Decision, Result
+    ├── services/
+    │   ├── aiDetection.ts            # Translation + heuristic scam detection
+    │   └── storage.ts                # AsyncStorage persistence layer
+    └── types/game.ts                 # GameState, GameAction, FlowStep, Decision
+```
+
+---
+
+## ⚙️ State Management
+
+React Context + `useReducer` with 17 action types.
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| `balance` | ₹5,000 | Virtual wallet balance |
+| `trustScore` | 80/100 | Community trust rating |
+| `currentLevel` | 1 | Active mission (1–3) |
+| `language` | `"en"` | UI language (`en` / `hi` / `as`) |
+| `voiceEnabled` | `true` | Text-to-speech toggle |
+| `assistedMode` | `false` | Intergenerational teaching tips |
+
+**Persistence:** All state saved to `AsyncStorage` under `bharatquest.*` keys. Restored on app launch. Onboarding auto-skipped if user has progressed past Level 1.
+
+---
+
+## 🔧 Configuration
+
+### Bhashini API (optional — disabled by default)
+
+```typescript
+// src/services/aiDetection.ts
+const BHASHINI_API_KEY = ''; // Leave empty for offline demo (recommended)
+const BHASHINI_USER_ID = '';
+```
+
+> **For demos:** Keep these empty. The built-in mock translator works offline and covers all scam vocabulary.
+
+### Key `app.json` Settings
+
+| Setting | Value | Purpose |
+|---------|-------|---------|
+| `userInterfaceStyle` | `"dark"` | Dark theme |
+| `splash.backgroundColor` | `"#0A0E17"` | No white flash on launch |
+| `android.permissions` | `READ_SMS`, `RECEIVE_SMS` | SMS interception |
+
+---
+
+## 🎮 Demo Controls
+
+| Control | How | What It Does |
+|---------|-----|-------------|
+| **Reset Demo** | Triple-tap "Your Digital Wallet" title | Resets to ₹5,000, 80 trust, Level 1, clears storage |
+| **Simulate SMS** | Red button in Demo Tools section | Sends fake Hindi scam through full detection pipeline |
+| **Voice Toggle** | Floating speaker button (bottom-right) | Toggles TTS narration on/off |
+| **Language Switch** | EN / HI / AS buttons in Settings | Changes entire UI + content language live |
+
+---
+
+## 📦 Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | React Native 0.81 + Expo 54 |
+| **Language** | TypeScript 5.9 (strict mode) |
+| **Navigation** | React Navigation 7 (native-stack) |
+| **State** | Context API + useReducer |
+| **Persistence** | AsyncStorage |
+| **Voice** | expo-speech |
+| **Haptics** | expo-haptics |
+| **Effects** | expo-blur, react-native-confetti-cannon |
+| **Icons** | @expo/vector-icons (Material Community) |
+| **Native Module** | Custom Kotlin BroadcastReceiver |
+
+---
+
+## ⚠️ Known Limitations
+
+| Area | Limitation | Workaround |
+|------|-----------|------------|
+| **SMS** | Android only, requires native build | "Simulate SMS" button for demos |
+| **Translation** | Mock translator, not full NLP | Covers 200+ scam keywords — sufficient for detection |
+| **Sync** | Cloud sync is simulated | Deliberate UX choice for offline-first demo |
+| **Tests** | No automated test suite | Hackathon MVP — optimized for demo reliability |
+| **Platform** | Portrait mobile only | Designed for the most common rural use case |
+
+---
+
+## 📜 Scripts
+
+```bash
+npm start          # Expo dev server
+npm run android    # Native Android build
+npm run ios        # iOS simulator
+npm run web        # Web (limited features)
+```
+
+---
+
+<p align="center">
+  <strong>Built for HackDays 4.0</strong><br/>
+  <em>Because financial literacy shouldn't be a privilege — it should be an experience.</em>
+</p>
 
 ---
 
