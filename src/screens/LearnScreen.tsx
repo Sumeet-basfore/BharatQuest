@@ -20,8 +20,6 @@ const MISSION_ICONS: Record<number, string> = {
   3: "phone-incoming",
 };
 
-
-
 export function LearnScreen({ navigation }: any) {
   const content = useContent();
   const { state, dispatch } = useGame();
@@ -61,7 +59,7 @@ export function LearnScreen({ navigation }: any) {
             {content.learn.yourMissions}
           </Text>
 
-          {/* ── Progress Banner ── */}
+          {/* ── Progress Banner (TOP) ── */}
           <View style={[styles.progressBanner, { backgroundColor: isDark ? "rgba(99,102,241,0.12)" : "#EBF4FF", borderColor: colors.primary }]}>
             <MaterialCommunityIcons name="trophy-outline" size={32} color={colors.primary} />
             <View style={{ flex: 1 }}>
@@ -209,27 +207,6 @@ export function LearnScreen({ navigation }: any) {
               </View>
             </View>
           ))}
-        </View>
-
-        {/* ── Progress Banner ── */}
-        <View style={[styles.progressBanner, { backgroundColor: isDark ? "rgba(99,102,241,0.12)" : "#EBF4FF", borderColor: colors.primary }]}>
-          <MaterialCommunityIcons name="trophy-outline" size={32} color={colors.primary} />
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.bannerTitle, { color: textPrimary, fontSize: 15 * fontScale }]}>
-              {content.learn.missionProgressTitle}
-            </Text>
-            <Text style={[styles.bannerBody, { color: textSecondary, fontSize: 13 * fontScale }]}>
-              {content.learn.scamsDefeated.replace("{current}", String(state.highestLevel - 1)).replace("{total}", String(content.levels.length))}
-            </Text>
-            <View style={[styles.progressTrack, { backgroundColor: isDark ? colors.surfaceLight : "#D1D5DB" }]}>
-              <View
-                style={[
-                  styles.progressFill,
-                  { width: `${Math.round(((state.currentLevel - 1) / content.levels.length) * 100)}%` as any },
-                ]}
-              />
-            </View>
-          </View>
         </View>
       </ScrollView>
     </ScreenShell>
