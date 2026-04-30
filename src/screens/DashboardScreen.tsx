@@ -6,7 +6,6 @@ import { ScreenShell } from "../components/common/ScreenShell";
 import { HUDStat } from "../components/common/HUDStat";
 import { FarmBackdrop } from "../components/game/FarmBackdrop";
 import { OnboardingModal } from "../components/game/OnboardingModal";
-import { VoiceFab } from "../components/common/VoiceFab";
 import { useGame } from "../context/GameContext";
 import { colors, spacing, timing, typography, radii, shadows } from "../config/theme";
 import { useContent } from "../config/content";
@@ -201,10 +200,6 @@ export function DashboardScreen({ navigation }: any) {
         </View>
       </ScrollView>
 
-      <VoiceFab 
-        enabled={state.voiceEnabled} 
-        onPress={() => dispatch({ type: "TOGGLE_VOICE" })} 
-      />
     </ScreenShell>
   );
 }

@@ -23,6 +23,8 @@ const initialState: GameState = {
   currentLevel: 1,
   language: "en",
   assistedMode: false,
+  darkMode: true,
+  fontSize: "medium",
 };
 
 function gameReducer(state: GameState, action: GameAction): GameState {
@@ -55,6 +57,10 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, language: action.payload };
     case "TOGGLE_ASSISTED_MODE":
       return { ...state, assistedMode: !state.assistedMode };
+    case "TOGGLE_DARK_MODE":
+      return { ...state, darkMode: !state.darkMode };
+    case "SET_FONT_SIZE":
+      return { ...state, fontSize: action.payload };
     case "RESET_GAME":
       return { ...initialState };
     default:

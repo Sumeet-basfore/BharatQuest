@@ -27,6 +27,8 @@ export interface GameState {
   currentLevel: number;
   language: "en" | "hi" | "as";
   assistedMode: boolean;
+  darkMode: boolean;
+  fontSize: "small" | "medium" | "large";
 }
 
 export type GameAction =
@@ -44,6 +46,8 @@ export type GameAction =
   | { type: "SET_LEVEL"; payload: number }
   | { type: "SET_LANGUAGE"; payload: "en" | "hi" | "as" }
   | { type: "TOGGLE_ASSISTED_MODE" }
+  | { type: "TOGGLE_DARK_MODE" }
+  | { type: "SET_FONT_SIZE"; payload: "small" | "medium" | "large" }
   | { type: "RESET_GAME" };
 
 export interface ChatMessage {

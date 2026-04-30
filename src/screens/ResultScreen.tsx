@@ -67,7 +67,7 @@ export function ResultScreen({ navigation }: any) {
 
   const handleSyncComplete = () => {
     dispatch({ type: "SET_FLOW_STEP", payload: "dashboard" });
-    navigation.replace("DashboardScreen");
+    navigation.replace("Main");
   };
 
   const renderFlash = () => {

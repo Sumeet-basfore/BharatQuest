@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { DashboardScreen } from "../screens/DashboardScreen";
+import { MainTabNavigator } from "./MainTabNavigator";
 import { RewardPopupScreen } from "../screens/RewardPopupScreen";
 import { ChatScreen } from "../screens/ChatScreen";
 import { DecisionScreen } from "../screens/DecisionScreen";
@@ -34,7 +34,9 @@ export function RootNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false, animation: "fade" }}>
-        <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
+        {/* Main app: tabbed home/learn/profile */}
+        <Stack.Screen name="Main" component={MainTabNavigator} />
+        {/* Full-screen modal flows (layered on top of tabs) */}
         <Stack.Screen name="RewardPopupScreen" component={RewardPopupScreen} />
         <Stack.Screen name="ChatScreen" component={ChatScreen} />
         <Stack.Screen name="DecisionScreen" component={DecisionScreen} />
