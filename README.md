@@ -4,28 +4,28 @@
 
 ---
 
-## 🚀 The Vision
+##  The Vision
 In 2024, India lost over **₹1.25 lakh crore** to digital fraud. Rural users are the most vulnerable, often receiving scam SMS in regional scripts (Hindi, Assamese) that bypass traditional filters. **BharatQuest** transforms "boring" warnings into an immersive game, letting users experience the consequences of scams in a safe, simulated environment.
 
-## ✨ Core Innovations
+##  Core Innovations
 
-### 🧠 7-Pattern "Heuristic AI" Detection
+###  7-Pattern "Heuristic AI" Detection
 Built with a custom translation layer, our engine detects scams even in regional scripts:
 - **Urgency Traps**: Detects "Account Blocked" or "KYC Expired" pressure tactics.
 - **Greed Signals**: Identifies fake lottery, cashback, and reward promises.
 - **Mixed-Script Detection**: Analyzes Hindi/Assamese mixed with English (Hinglish).
 - **Link-less Analysis**: Catches scams that use social engineering without a URL.
 
-### 📱 Real-Time SMS Interceptor
+###  Real-Time SMS Interceptor
 A custom-built **Kotlin Native Module** that scans incoming SMS on Android. If a scam is detected, the app triggers a real-time intervention, educating the user *before* they click.
 
-### 🗣️ Voice-First & Multi-Language
+###  Voice-First & Multi-Language
 Designed for low-literacy users with **Expo Speech (TTS)** and native support for:
-- 🇮🇳 **Hindi (हिन्दी)**
-- 🇮🇳 **Assamese (অসমীয়া)**
-- 🇬🇧 **English**
+-  **Hindi (हिन्दी)**
+-  **Assamese (অসমীয়া)**
+-  **English**
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -37,7 +37,7 @@ Designed for low-literacy users with **Expo Speech (TTS)** and native support fo
 | **AI/ML** | Heuristic Detection Engine + Bhashini Translation API |
 | **UX** | Expo Speech (TTS), Expo Haptics, Lottie Animations |
 
-## 🕹️ The Game Loop
+## The Game Loop
 Users navigate a structured journey across multiple levels:
 1. **Dashboard**: Manage a virtual wallet of ₹5,000.
 2. **Mission**: Encounter realistic scenarios (WhatsApp scams, QR code fraud, UPI phishing).
@@ -71,7 +71,7 @@ src/
    npx expo run:android
    ```
 
-## 🧪 Demo Controls
+##  Demo Controls
 - **Simulate Scam**: Use the red button in "Demo Tools" to trigger the SMS Interceptor.
 - **Reset Progress**: Triple-tap the "Digital Wallet" title on the Dashboard.
 - **Language**: Switch languages live via the Settings toggle.
